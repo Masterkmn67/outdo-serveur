@@ -1,0 +1,60 @@
+# Serveur OutDO! (Nakama + sa base de données). Sur le serveur loué : « docker compose up -d » dans ce dossier.
+# OUTDO_ADMINS : noms d'utilisateur (ou identifiants) des comptes propriétaires, séparés par des virgules.
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: nakama
+      POSTGRES_PASSWORD: ${OUTDO_DB_PASSWORD:-localdb}
+    volumes:
+      - data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "nakama"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  nakama:
+    image: heroiclabs/nakama:${NAKAMA_VERSION:-3.24.2}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint:
+      - /bin/sh
+      - -ecx
+      - >
+        /nakama/nakama migrate up --database.address postgres:${OUTDO_DB_PASSWORD:-localdb}@postgres:5432/nakama &&
+        exec /nakama/nakama --name outdo1
+        --database.address postgres:${OUTDO_DB_PASSWORD:-localdb}@postgres:5432/nakama
+        --logger.level INFO
+        --session.token_expiry_sec 86400
+        --socket.server_key ${OUTDO_SERVER_KEY:-defaultkey}
+        --runtime.http_key ${OUTDO_HTTP_KEY:-defaulthttpkey}
+        --console.username ${OUTDO_CONSOLE_USER:-admin}
+        --console.password ${OUTDO_CONSOLE_PASSWORD:-change-moi}
+        --runtime.js_entrypoint outdo.js
+        --runtime.env OUTDO_ADMINS=${OUTDO_ADMINS:-}
+        --runtime.env OUTDO_MULTI_MIN_SEC=${OUTDO_MULTI_MIN_SEC:-120}
+    volumes:
+      - ./modules:/nakama/data/modules:ro
+    ports:
+      - "127.0.0.1:7350:7350" # API des joueurs (le public passe par Caddy, en HTTPS)
+      - "127.0.0.1:7351:7351" # console d'administration (seulement depuis le serveur lui-même)
+    restart: unless-stopped
+  # Caddy : HTTPS automatique (certificat gratuit) devant Nakama ; activé sur le vrai serveur (profil « https »)
+  caddy:
+    image: caddy:2
+    profiles: ["https"]
+    depends_on: [nakama]
+    environment:
+      OUTDO_DOMAIN: ${OUTDO_DOMAIN:-localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
+volumes:
+  data:
+  caddy_data:

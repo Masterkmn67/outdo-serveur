@@ -1,0 +1,8 @@
+{
+  "name": "outdo-server-tests",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@heroiclabs/nakama-js": "^2.8.0"
+  }
+}

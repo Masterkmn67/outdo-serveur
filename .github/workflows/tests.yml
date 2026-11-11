@@ -1,0 +1,44 @@
+# Serveur Nakama d'OutDO! : lancé pour de vrai (Nakama + base de données) puis testé de bout en bout.
+# Ne publie rien, ne touche ni au jeu officiel ni aux versions web.
+name: Serveur Nakama — tests
+
+on:
+  push:
+    branches: ['main']
+  workflow_dispatch:
+
+concurrency:
+  group: nakama-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  serveur:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Démarrer Nakama + base de données
+        working-directory: .
+        env:
+          OUTDO_ADMINS: owner_test
+          OUTDO_MULTI_MIN_SEC: '0'
+        run: |
+          docker compose up -d
+          for i in $(seq 1 90); do
+            if curl -sf http://127.0.0.1:7350/healthcheck >/dev/null; then echo "Nakama prêt après ${i}s"; break; fi
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:7350/healthcheck
+          docker compose logs nakama | grep -i "OutDO\|error" | head -20
+      - name: Tests de bout en bout
+        working-directory: test
+        run: |
+          npm install --no-audit --no-fund
+          node run.mjs
+      - name: Journal du serveur (en cas d'échec)
+        if: failure()
+        working-directory: .
+        run: docker compose logs --tail 200 nakama

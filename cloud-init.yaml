@@ -1,0 +1,26 @@
+#cloud-config
+# OutDO! — installation complète du serveur de jeu, sans rien taper.
+# À coller dans « Cloud config » au moment de créer le serveur (Ubuntu 24.04).
+package_update: true
+packages:
+  - docker.io
+  - docker-compose-v2
+  - git
+  - curl
+runcmd:
+  - systemctl enable --now docker
+  - git clone -q --depth 1 https://github.com/Masterkmn67/outdo-serveur.git /opt/outdo
+  - |
+    IP=$(curl -s http://169.254.169.254/hetzner/v1/metadata/public-ipv4 || curl -s https://api.ipify.org)
+    cat > /opt/outdo-secrets.env <<EOT
+    OUTDO_DOMAIN=$(echo "$IP" | tr . -).sslip.io
+    OUTDO_DB_PASSWORD=$(openssl rand -hex 16)
+    OUTDO_HTTP_KEY=$(openssl rand -hex 16)
+    OUTDO_CONSOLE_USER=admin
+    OUTDO_CONSOLE_PASSWORD=$(openssl rand -hex 12)
+    OUTDO_SERVER_KEY=outdo-public
+    OUTDO_MULTI_MIN_SEC=120
+    EOT
+    chmod 600 /opt/outdo-secrets.env
+  - sh /opt/outdo/update.sh --force
+  - echo '*/5 * * * * root sh /opt/outdo/update.sh >> /var/log/outdo-update.log 2>&1' > /etc/cron.d/outdo-update
