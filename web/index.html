@@ -1,1 +1,108 @@
-<!doctype html><meta charset=utf-8><title>OutDO!</title><p>Le jeu arrive bientôt.</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="./">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="OutDO! My life is BETTER !">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#FFD93D">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="OutDO!">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <title>OutDO!</title>
+  <link rel="manifest" href="manifest.json">
+  <style>html,body{margin:0;height:100%;background:#FFD93D;overflow:hidden}</style>
+</head>
+<body>
+  <script>
+    // Pont vers la base de données de la page (réglages du mode Admin), quand le jeu tourne dans claude.ai.
+    window.outdoBg = function (c) {
+      document.documentElement.style.background = c; document.body.style.background = c;
+      var m = document.querySelector('meta[name=theme-color]');
+      if (!m) { m = document.createElement('meta'); m.name = 'theme-color'; document.head.appendChild(m); }
+      m.content = c;
+    };
+    window.outdoStore = {
+      db: null, can: false,
+      init: async function () {
+        try {
+          var c = window.claude; if (!c || !c.use) return 'none';
+          var r = await Promise.all([c.use('db'), c.use('user')]);
+          this.db = r[0]; var u = r[1];
+          this.can = !!(u && (await u.canEdit()));
+          return this.db ? (this.can ? 'owner' : 'viewer') : 'none';
+        } catch (e) { return 'none'; }
+      },
+      load: async function () {
+        try { if (!this.db) return ''; var s = await this.db.doc('avfix/main').get(); return s && s.exists ? JSON.stringify(s.data()) : ''; }
+        catch (e) { return ''; }
+      },
+      save: async function (json) {
+        try { if (!this.db || !this.can) return 'no'; await this.db.doc('avfix/main').set(JSON.parse(json)); return 'ok'; }
+        catch (e) { return 'err'; }
+      }
+    };
+    // Mode Admin (versions de TEST seulement) : base de données + identité claude.ai, vérifiées par le serveur.
+    // Toutes les réponses sont du JSON {ok, ...} ; aucune donnée n'est écrite dans la console.
+    window.outdoAdmin = {
+      db: null, user: null, dl: null, ready: null,
+      _init: function () {
+        var self = this;
+        if (!this.ready) {
+          this.ready = (async function () {
+            var c = window.claude; if (!c || !c.use) return false;
+            var r = await Promise.all([c.use('db'), c.use('user'), c.use('downloads')]);
+            self.db = r[0]; self.user = r[1]; self.dl = r[2];
+            return !!(self.db || self.user);
+          })().catch(function () { return false; });
+        }
+        return this.ready;
+      },
+      subs: {}, nextSub: 1,
+      // Écoute en direct d'un document ou d'une collection (multijoueur). cb reçoit du JSON {ok, data | docs}.
+      watch: async function (kind, path, cb) {
+        try {
+          if (!(await this._init()) || !this.db) return 0;
+          var id = this.nextSub++;
+          var err = function (e) { cb(JSON.stringify({ ok: false, code: (e && e.code) || 'unavailable' })); };
+          var un = kind === 'doc'
+            ? this.db.doc(path).onSnapshot(function (s) { cb(JSON.stringify({ ok: true, data: s.exists ? (s.data() || {}) : null })); }, err)
+            : this.db.collection(path).onSnapshot(function (q) { cb(JSON.stringify({ ok: true, docs: q.docs.map(function (d) { return { id: d.id, data: d.data() || {} }; }) })); }, err);
+          this.subs[id] = un;
+          return id;
+        } catch (e) { return 0; }
+      },
+      unwatch: function (id) { var u = this.subs[id]; if (u) { try { u(); } catch (e) {} delete this.subs[id]; } },
+      call: async function (op, args) {
+        var J = JSON.stringify;
+        try {
+          var a = args ? JSON.parse(args) : {};
+          if (!(await this._init())) return J({ ok: false, code: 'none', msg: 'Pas dans claude.ai' });
+          var db = this.db, u = this.user;
+          if (op === 'me') {
+            if (!u) return J({ ok: true, me: null, db: !!db });
+            var m = await u.me();
+            return J({ ok: true, db: !!db, me: { id: m.id || '', name: m.name || '', isOwner: !!m.isOwner, canEdit: !!m.canEdit } });
+          }
+          if (op === 'search') { var h = u ? await u.search(a.q || '') : []; return J({ ok: true, users: h.map(function (x) { return { id: x.id, name: x.name || '' }; }) }); }
+          if (op === 'names') { var ps = u ? await u.profiles(a.ids || []) : {}; var o = {}; for (var k in ps) o[k] = (ps[k] && ps[k].name) || ''; return J({ ok: true, names: o }); }
+          if (op === 'download') { if (!this.dl) return J({ ok: false, code: 'none' }); var sr = await this.dl.save({ filename: a.filename, data: a.data }); return J({ ok: true, status: (sr && sr.status) || '' }); }
+          if (!db) return J({ ok: false, code: 'none', msg: 'Pas de base de données' });
+          if (op === 'get') { var s = await db.doc(a.path).get(); return J({ ok: true, data: s.exists ? (s.data() || {}) : null }); }
+          if (op === 'set') { await db.doc(a.path).set(a.data); return J({ ok: true }); }
+          if (op === 'del') { await db.doc(a.path).delete(); return J({ ok: true }); }
+          if (op === 'list') { var q = await db.collection(a.path).limit(a.limit || 200).get(); return J({ ok: true, docs: q.docs.map(function (d) { return { id: d.id, data: d.data() || {} }; }) }); }
+          return J({ ok: false, code: 'invalid', msg: 'op inconnue' });
+        } catch (e) {
+          return J({ ok: false, code: (e && e.code) || 'unavailable', msg: String((e && e.message) || e).slice(0, 200) });
+        }
+      }
+    };
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

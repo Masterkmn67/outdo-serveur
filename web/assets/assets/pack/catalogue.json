@@ -1,0 +1,1898 @@
+{
+ "format": "outdo-game-catalog",
+ "version": 2,
+ "packVersion": 2,
+ "frame": {
+  "x0": 219,
+  "y0": 20,
+  "w": 800,
+  "h": 1004.6511627906976,
+  "canvas": 1254
+ },
+ "out": {
+  "w": 688,
+  "h": 864
+ },
+ "skin": {
+  "slot": "peau",
+  "palette": {
+   "defaut": "#FFC38C"
+  }
+ },
+ "skinDynamic": true,
+ "items": [
+  {
+   "cat": "morph",
+   "k": "femme_L_pulpeuse",
+   "n": "Pulpeuse",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "essential": true,
+   "legacy": [
+    "06_buste_large"
+   ],
+   "img": {
+    "femme_L_pulpeuse": {
+     "z": 10,
+     "skinRef": "#FF9848",
+     "f": "morph-femme_L_pulpeuse__femme_L_pulpeuse"
+    }
+   }
+  },
+  {
+   "cat": "morph",
+   "k": "femme_M_standard",
+   "n": "Standard",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "essential": true,
+   "legacy": [
+    "05_buste_standard"
+   ],
+   "img": {
+    "femme_M_standard": {
+     "z": 10,
+     "skinRef": "#FF9848",
+     "f": "morph-femme_M_standard__femme_M_standard"
+    }
+   }
+  },
+  {
+   "cat": "morph",
+   "k": "femme_S_fine",
+   "n": "Fine",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "essential": true,
+   "legacy": [
+    "04_buste_fin"
+   ],
+   "img": {
+    "femme_S_fine": {
+     "z": 10,
+     "skinRef": "#FF9848",
+     "f": "morph-femme_S_fine__femme_S_fine"
+    }
+   }
+  },
+  {
+   "cat": "morph",
+   "k": "homme_L_corpulent",
+   "n": "Corpulent",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "essential": true,
+   "legacy": [
+    "03_corpulent"
+   ],
+   "img": {
+    "homme_L_corpulent": {
+     "z": 10,
+     "skinRef": "#FB9F64",
+     "f": "morph-homme_L_corpulent__homme_L_corpulent"
+    }
+   }
+  },
+  {
+   "cat": "morph",
+   "k": "homme_M_normal",
+   "n": "Normal",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "essential": true,
+   "legacy": [
+    "02_standard"
+   ],
+   "img": {
+    "homme_M_normal": {
+     "z": 10,
+     "skinRef": "#FBA665",
+     "f": "morph-homme_M_normal__homme_M_normal"
+    }
+   }
+  },
+  {
+   "cat": "morph",
+   "k": "homme_S_muscle",
+   "n": "Musclé",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "essential": true,
+   "legacy": [
+    "01_mince"
+   ],
+   "img": {
+    "homme_S_muscle": {
+     "z": 10,
+     "skinRef": "#FB9F60",
+     "f": "morph-homme_S_muscle__homme_S_muscle"
+    }
+   }
+  },
+  {
+   "cat": "head",
+   "k": "tete",
+   "n": "Tête",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "essential": true,
+   "img": {
+    "*": {
+     "z": 21,
+     "skinRef": "#F99E63",
+     "f": "head-tete__tous"
+    }
+   }
+  },
+  {
+   "cat": "eyes",
+   "k": "yeux_amoureux",
+   "n": "Amoureux",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 30,
+     "f": "eyes-yeux_amoureux__m"
+    },
+    "f": {
+     "z": 30,
+     "f": "eyes-yeux_amoureux__f"
+    }
+   }
+  },
+  {
+   "cat": "eyes",
+   "k": "yeux_cerne",
+   "n": "Cerné",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 30,
+     "f": "eyes-yeux_cerne__m"
+    },
+    "f": {
+     "z": 30,
+     "f": "eyes-yeux_cerne__f"
+    }
+   }
+  },
+  {
+   "cat": "eyes",
+   "k": "yeux_colere",
+   "n": "Colère",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 30,
+     "f": "eyes-yeux_colere__m"
+    },
+    "f": {
+     "z": 30,
+     "f": "eyes-yeux_colere__f"
+    }
+   }
+  },
+  {
+   "cat": "eyes",
+   "k": "yeux_determine",
+   "n": "Déterminé",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 30,
+     "f": "eyes-yeux_determine__m"
+    },
+    "f": {
+     "z": 30,
+     "f": "eyes-yeux_determine__f"
+    }
+   }
+  },
+  {
+   "cat": "eyes",
+   "k": "yeux_douteux",
+   "n": "Douteux",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 30,
+     "f": "eyes-yeux_douteux__m"
+    },
+    "f": {
+     "z": 30,
+     "f": "eyes-yeux_douteux__f"
+    }
+   }
+  },
+  {
+   "cat": "eyes",
+   "k": "yeux_fatigue",
+   "n": "Fatigué",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 30,
+     "f": "eyes-yeux_fatigue__m"
+    },
+    "f": {
+     "z": 30,
+     "f": "eyes-yeux_fatigue__f"
+    }
+   }
+  },
+  {
+   "cat": "eyes",
+   "k": "yeux_fermes",
+   "n": "Fermés",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 30,
+     "f": "eyes-yeux_fermes__m"
+    },
+    "f": {
+     "z": 30,
+     "f": "eyes-yeux_fermes__f"
+    }
+   }
+  },
+  {
+   "cat": "eyes",
+   "k": "yeux_fou",
+   "n": "Fou",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 30,
+     "f": "eyes-yeux_fou__m"
+    },
+    "f": {
+     "z": 30,
+     "f": "eyes-yeux_fou__f"
+    }
+   }
+  },
+  {
+   "cat": "eyes",
+   "k": "yeux_joyeux",
+   "n": "Joyeux",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 30,
+     "f": "eyes-yeux_joyeux__m"
+    },
+    "f": {
+     "z": 30,
+     "f": "eyes-yeux_joyeux__f"
+    }
+   }
+  },
+  {
+   "cat": "eyes",
+   "k": "yeux_neutre",
+   "n": "Neutre",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 30,
+     "f": "eyes-yeux_neutre__m"
+    },
+    "f": {
+     "z": 30,
+     "f": "eyes-yeux_neutre__f"
+    }
+   }
+  },
+  {
+   "cat": "eyes",
+   "k": "yeux_rieur",
+   "n": "Rieur",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 30,
+     "f": "eyes-yeux_rieur__m"
+    },
+    "f": {
+     "z": 30,
+     "f": "eyes-yeux_rieur__f"
+    }
+   }
+  },
+  {
+   "cat": "eyes",
+   "k": "yeux_serieux",
+   "n": "Sérieux",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 30,
+     "f": "eyes-yeux_serieux__m"
+    },
+    "f": {
+     "z": 30,
+     "f": "eyes-yeux_serieux__f"
+    }
+   }
+  },
+  {
+   "cat": "eyes",
+   "k": "yeux_sourire",
+   "n": "Sourire",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 30,
+     "f": "eyes-yeux_sourire__m"
+    },
+    "f": {
+     "z": 30,
+     "f": "eyes-yeux_sourire__f"
+    }
+   }
+  },
+  {
+   "cat": "eyes",
+   "k": "yeux_surpris",
+   "n": "Surpris",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 30,
+     "f": "eyes-yeux_surpris__m"
+    },
+    "f": {
+     "z": 30,
+     "f": "eyes-yeux_surpris__f"
+    }
+   }
+  },
+  {
+   "cat": "eyes",
+   "k": "yeux_triste",
+   "n": "Triste",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 30,
+     "f": "eyes-yeux_triste__m"
+    },
+    "f": {
+     "z": 30,
+     "f": "eyes-yeux_triste__f"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_f_boudeuse",
+   "n": "Boudeuse",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "f": {
+     "z": 35,
+     "f": "mouth-bouche_f_boudeuse__f"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_f_choquee",
+   "n": "Choquée",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "f": {
+     "z": 35,
+     "f": "mouth-bouche_f_choquee__f"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_f_enervee",
+   "n": "Énervée",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "f": {
+     "z": 35,
+     "f": "mouth-bouche_f_enervee__f"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_f_grand_sourire",
+   "n": "Grand sourire",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "f": {
+     "z": 35,
+     "f": "mouth-bouche_f_grand_sourire__f"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_f_langue_bave",
+   "n": "Langue tirée",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "f": {
+     "z": 35,
+     "f": "mouth-bouche_f_langue_bave__f"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_f_neutre",
+   "n": "Neutre",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "essential": true,
+   "img": {
+    "f": {
+     "z": 35,
+     "f": "mouth-bouche_f_neutre__f"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_f_rire",
+   "n": "Rire",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "f": {
+     "z": 35,
+     "f": "mouth-bouche_f_rire__f"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_f_serieuse",
+   "n": "Sérieuse",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "f": {
+     "z": 35,
+     "f": "mouth-bouche_f_serieuse__f"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_f_sourire_charmeur",
+   "n": "Sourire charmeur",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "f": {
+     "z": 35,
+     "f": "mouth-bouche_f_sourire_charmeur__f"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_f_sourire_doux",
+   "n": "Sourire doux",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "f": {
+     "z": 35,
+     "f": "mouth-bouche_f_sourire_doux__f"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_f_tres_enervee",
+   "n": "Très énervée",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "f": {
+     "z": 35,
+     "f": "mouth-bouche_f_tres_enervee__f"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_f_triste",
+   "n": "Triste",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "f": {
+     "z": 35,
+     "f": "mouth-bouche_f_triste__f"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_h_baveu",
+   "n": "Baveux",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 36.5,
+     "f": "mouth-bouche_h_baveu__m"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_h_enerve",
+   "n": "Énervé",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 35,
+     "f": "mouth-bouche_h_enerve__m"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_h_grand_sourire",
+   "n": "Grand sourire",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 35,
+     "f": "mouth-bouche_h_grand_sourire__m"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_h_mefiant",
+   "n": "Méfiant",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 35,
+     "f": "mouth-bouche_h_mefiant__m"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_h_neutre",
+   "n": "Neutre",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "essential": true,
+   "img": {
+    "m": {
+     "z": 35,
+     "f": "mouth-bouche_h_neutre__m"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_h_rire",
+   "n": "Rire",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 35,
+     "f": "mouth-bouche_h_rire__m"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_h_rire_fort",
+   "n": "Rire fort",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 35,
+     "f": "mouth-bouche_h_rire_fort__m"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_h_rire_malicieux",
+   "n": "Rire malicieux",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 35,
+     "f": "mouth-bouche_h_rire_malicieux__m"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_h_serieux",
+   "n": "Sérieux",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 35,
+     "f": "mouth-bouche_h_serieux__m"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_h_sourire",
+   "n": "Sourire",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 35,
+     "f": "mouth-bouche_h_sourire__m"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_h_surpris",
+   "n": "Surpris",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 35,
+     "f": "mouth-bouche_h_surpris__m"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_h_tres_enerve",
+   "n": "Très énervé",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 35,
+     "f": "mouth-bouche_h_tres_enerve__m"
+    }
+   }
+  },
+  {
+   "cat": "mouth",
+   "k": "bouche_h_triste",
+   "n": "Triste",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 35,
+     "f": "mouth-bouche_h_triste__m"
+    }
+   }
+  },
+  {
+   "cat": "beard",
+   "k": "barbe_aucune",
+   "n": "Aucune",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "essential": true,
+   "img": {},
+   "builtin": true
+  },
+  {
+   "cat": "beard",
+   "k": "barbe_barbe_de_3_jours",
+   "n": "Barbe de 3 jours",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 36,
+     "f": "beard-barbe_barbe_de_3_jours__m",
+     "lum": 0.103
+    }
+   }
+  },
+  {
+   "cat": "beard",
+   "k": "barbe_barbe_pleine",
+   "n": "Barbe pleine",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 36,
+     "f": "beard-barbe_barbe_pleine__m",
+     "lum": 0.14
+    }
+   }
+  },
+  {
+   "cat": "beard",
+   "k": "barbe_bouc",
+   "n": "Bouc",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 36,
+     "f": "beard-barbe_bouc__m",
+     "lum": 0.13
+    }
+   }
+  },
+  {
+   "cat": "beard",
+   "k": "barbe_collier",
+   "n": "Collier",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 36,
+     "f": "beard-barbe_collier__m",
+     "lum": 0.141
+    }
+   }
+  },
+  {
+   "cat": "beard",
+   "k": "barbe_moustache",
+   "n": "Moustache",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 36,
+     "f": "beard-barbe_moustache__m",
+     "lum": 0.214
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "chauve",
+   "n": "Chauve",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "essential": true,
+   "img": {},
+   "builtin": true
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_f_boucles",
+   "n": "Bouclés",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "f": {
+     "z": 40,
+     "f": "hair-cheveux_f_boucles__f",
+     "lum": 0.194
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_f_chignon_boucle",
+   "n": "Chignon bouclé",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "f": {
+     "z": 40,
+     "f": "hair-cheveux_f_chignon_boucle__f",
+     "lum": 0.258
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_f_chignons_et_frange",
+   "n": "Chignons et frange",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "f": {
+     "z": 40,
+     "f": "hair-cheveux_f_chignons_et_frange__f",
+     "lum": 0.202
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_f_ondules_rouges",
+   "n": "Ondulés rouges",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "f": {
+     "z": 40,
+     "f": "hair-cheveux_f_ondules_rouges__f",
+     "lum": 0.21
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_f_queue_de_cheval",
+   "n": "Queue de cheval",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "f": {
+     "z": 40,
+     "f": "hair-cheveux_f_queue_de_cheval__f",
+     "lum": 0.247
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_f_tresse_sur_le_cote",
+   "n": "Tresse sur le côté",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "f": {
+     "z": 40,
+     "f": "hair-cheveux_f_tresse_sur_le_cote__f",
+     "lum": 0.299
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_f_tresses_collees",
+   "n": "Tresse longue",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "essential": true,
+   "legacy": [
+    "cheveux_f_tresse_longue"
+   ],
+   "img": {
+    "f": {
+     "z": 40,
+     "f": "hair-cheveux_f_tresses_collees__f",
+     "lum": 0.207
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_f_undercut_platine",
+   "n": "Undercut platine",
+   "sex": "f",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "f": {
+     "z": 40,
+     "f": "hair-cheveux_f_undercut_platine__f",
+     "lum": 0.66
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_h_afro",
+   "n": "Afro",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "legacy": [
+    "hair_06"
+   ],
+   "img": {
+    "m": {
+     "z": 40,
+     "f": "hair-cheveux_h_afro__m",
+     "lum": 0.154
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_h_boucles",
+   "n": "Bouclés",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 40,
+     "f": "hair-cheveux_h_boucles__m",
+     "lum": 0.194
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_h_buzz_cut",
+   "n": "Buzz cut",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 40,
+     "f": "hair-cheveux_h_buzz_cut__m",
+     "lum": 0.127
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_h_chignon",
+   "n": "Chignon",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 40,
+     "f": "hair-cheveux_h_chignon__m",
+     "lum": 0.212
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_h_classique_court",
+   "n": "Classique court",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 40,
+     "f": "hair-cheveux_h_classique_court__m",
+     "lum": 0.158
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_h_degrade_bas",
+   "n": "Dégradé bas",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "essential": true,
+   "legacy": [
+    "hair_03"
+   ],
+   "img": {
+    "m": {
+     "z": 40,
+     "f": "hair-cheveux_h_degrade_bas__m",
+     "lum": 0.185
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_h_degrade_haut",
+   "n": "Dégradé haut",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 40,
+     "f": "hair-cheveux_h_degrade_haut__m",
+     "lum": 0.186
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_h_dreads",
+   "n": "Dreads",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "legacy": [
+    "hair_10"
+   ],
+   "img": {
+    "m": {
+     "z": 40,
+     "f": "hair-cheveux_h_dreads__m",
+     "lum": 0.173
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_h_frange",
+   "n": "Frange",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 40,
+     "f": "hair-cheveux_h_frange__m",
+     "lum": 0.194
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_h_longs",
+   "n": "Longs",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 40,
+     "f": "hair-cheveux_h_longs__m",
+     "lum": 0.188
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_h_meches",
+   "n": "Mèches",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 40,
+     "f": "hair-cheveux_h_meches__m",
+     "lum": 0.205
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_h_plaques",
+   "n": "Plaqués",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 40,
+     "f": "hair-cheveux_h_plaques__m",
+     "lum": 0.173
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_h_rase",
+   "n": "Rasé",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 40,
+     "f": "hair-cheveux_h_rase__m",
+     "lum": 0.204
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_h_tresses",
+   "n": "Tresses",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 40,
+     "f": "hair-cheveux_h_tresses__m",
+     "lum": 0.166
+    }
+   }
+  },
+  {
+   "cat": "hair",
+   "k": "cheveux_h_undercut",
+   "n": "Undercut",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {
+    "m": {
+     "z": 40,
+     "f": "hair-cheveux_h_undercut__m",
+     "lum": 0.185
+    }
+   }
+  },
+  {
+   "cat": "outfit",
+   "k": "blingbling",
+   "n": "Bling-bling",
+   "life": "active",
+   "eco": {
+    "price": {
+     "g": 1200
+    }
+   },
+   "legacy": [
+    "outfit_05_bling"
+   ],
+   "img": {
+    "homme_S_muscle": {
+     "z": 15,
+     "f": "outfit-blingbling__homme_S_muscle"
+    },
+    "homme_M_normal": {
+     "z": 15,
+     "f": "outfit-blingbling__homme_M_normal"
+    },
+    "homme_L_corpulent": {
+     "z": 15,
+     "f": "outfit-blingbling__homme_L_corpulent"
+    },
+    "femme_S_fine": {
+     "z": 15,
+     "skinRef": "#FCA35B",
+     "f": "outfit-blingbling__femme_S_fine",
+     "skin": "outfit-blingbling__femme_S_fine__peau",
+     "hide": "outfit-blingbling__femme_S_fine__cache"
+    },
+    "femme_M_standard": {
+     "z": 15,
+     "f": "outfit-blingbling__femme_M_standard",
+     "hide": "outfit-blingbling__femme_M_standard__cache"
+    },
+    "femme_L_pulpeuse": {
+     "z": 15,
+     "f": "outfit-blingbling__femme_L_pulpeuse",
+     "hide": "outfit-blingbling__femme_L_pulpeuse__cache"
+    }
+   }
+  },
+  {
+   "cat": "outfit",
+   "k": "chemise_noire",
+   "n": "Chemise noire",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "legacy": [
+    "outfit_03_chemise"
+   ],
+   "rc": {
+    "reference": "#342C2C"
+   },
+   "img": {
+    "homme_S_muscle": {
+     "z": 15,
+     "f": "outfit-chemise_noire__homme_S_muscle",
+     "col": "outfit-chemise_noire__homme_S_muscle__couleur"
+    },
+    "homme_M_normal": {
+     "z": 15,
+     "f": "outfit-chemise_noire__homme_M_normal",
+     "col": "outfit-chemise_noire__homme_M_normal__couleur"
+    },
+    "homme_L_corpulent": {
+     "z": 15,
+     "f": "outfit-chemise_noire__homme_L_corpulent",
+     "col": "outfit-chemise_noire__homme_L_corpulent__couleur"
+    },
+    "femme_S_fine": {
+     "z": 15,
+     "skinRef": "#F99E5B",
+     "f": "outfit-chemise_noire__femme_S_fine",
+     "skin": "outfit-chemise_noire__femme_S_fine__peau",
+     "hide": "outfit-chemise_noire__femme_S_fine__cache",
+     "col": "outfit-chemise_noire__femme_S_fine__couleur"
+    },
+    "femme_M_standard": {
+     "z": 15,
+     "skinRef": "#FAA05A",
+     "f": "outfit-chemise_noire__femme_M_standard",
+     "skin": "outfit-chemise_noire__femme_M_standard__peau",
+     "hide": "outfit-chemise_noire__femme_M_standard__cache",
+     "col": "outfit-chemise_noire__femme_M_standard__couleur"
+    },
+    "femme_L_pulpeuse": {
+     "z": 15,
+     "skinRef": "#FC9C59",
+     "f": "outfit-chemise_noire__femme_L_pulpeuse",
+     "skin": "outfit-chemise_noire__femme_L_pulpeuse__peau",
+     "hide": "outfit-chemise_noire__femme_L_pulpeuse__cache",
+     "col": "outfit-chemise_noire__femme_L_pulpeuse__couleur"
+    }
+   }
+  },
+  {
+   "cat": "outfit",
+   "k": "combinaison_spatiale",
+   "n": "Combinaison spatiale",
+   "life": "active",
+   "eco": {
+    "price": {
+     "g": 1500
+    }
+   },
+   "img": {
+    "homme_S_muscle": {
+     "z": 15,
+     "f": "outfit-combinaison_spatiale__homme_S_muscle",
+     "hide": "outfit-combinaison_spatiale__homme_S_muscle__cache"
+    },
+    "homme_M_normal": {
+     "z": 15,
+     "f": "outfit-combinaison_spatiale__homme_M_normal",
+     "hide": "outfit-combinaison_spatiale__homme_M_normal__cache"
+    },
+    "homme_L_corpulent": {
+     "z": 15,
+     "f": "outfit-combinaison_spatiale__homme_L_corpulent",
+     "hide": "outfit-combinaison_spatiale__homme_L_corpulent__cache"
+    },
+    "femme_S_fine": {
+     "z": 15,
+     "f": "outfit-combinaison_spatiale__femme_S_fine",
+     "hide": "outfit-combinaison_spatiale__femme_S_fine__cache"
+    },
+    "femme_M_standard": {
+     "z": 15,
+     "f": "outfit-combinaison_spatiale__femme_M_standard",
+     "hide": "outfit-combinaison_spatiale__femme_M_standard__cache"
+    },
+    "femme_L_pulpeuse": {
+     "z": 15,
+     "f": "outfit-combinaison_spatiale__femme_L_pulpeuse",
+     "hide": "outfit-combinaison_spatiale__femme_L_pulpeuse__cache"
+    }
+   }
+  },
+  {
+   "cat": "outfit",
+   "k": "costume_clown",
+   "n": "Clown",
+   "life": "active",
+   "eco": {
+    "price": {
+     "g": 600
+    }
+   },
+   "legacy": [
+    "outfit_06_clown"
+   ],
+   "img": {
+    "homme_S_muscle": {
+     "z": 15,
+     "f": "outfit-costume_clown__homme_S_muscle"
+    },
+    "homme_M_normal": {
+     "z": 15,
+     "f": "outfit-costume_clown__homme_M_normal"
+    },
+    "homme_L_corpulent": {
+     "z": 15,
+     "f": "outfit-costume_clown__homme_L_corpulent"
+    },
+    "femme_S_fine": {
+     "z": 15,
+     "skinRef": "#FB9B54",
+     "f": "outfit-costume_clown__femme_S_fine",
+     "skin": "outfit-costume_clown__femme_S_fine__peau",
+     "hide": "outfit-costume_clown__femme_S_fine__cache"
+    },
+    "femme_M_standard": {
+     "z": 15,
+     "skinRef": "#F89C57",
+     "f": "outfit-costume_clown__femme_M_standard",
+     "skin": "outfit-costume_clown__femme_M_standard__peau",
+     "hide": "outfit-costume_clown__femme_M_standard__cache"
+    },
+    "femme_L_pulpeuse": {
+     "z": 15,
+     "skinRef": "#FC9E4B",
+     "f": "outfit-costume_clown__femme_L_pulpeuse",
+     "skin": "outfit-costume_clown__femme_L_pulpeuse__peau",
+     "hide": "outfit-costume_clown__femme_L_pulpeuse__cache"
+    }
+   }
+  },
+  {
+   "cat": "outfit",
+   "k": "costume_heros",
+   "n": "Super-héros",
+   "life": "active",
+   "eco": {
+    "price": {
+     "g": 1200
+    }
+   },
+   "legacy": [
+    "outfit_07_superheros"
+   ],
+   "img": {
+    "homme_S_muscle": {
+     "z": 15,
+     "f": "outfit-costume_heros__homme_S_muscle"
+    },
+    "homme_M_normal": {
+     "z": 15,
+     "f": "outfit-costume_heros__homme_M_normal"
+    },
+    "homme_L_corpulent": {
+     "z": 15,
+     "f": "outfit-costume_heros__homme_L_corpulent"
+    },
+    "femme_S_fine": {
+     "z": 15,
+     "skinRef": "#F99B54",
+     "f": "outfit-costume_heros__femme_S_fine",
+     "skin": "outfit-costume_heros__femme_S_fine__peau"
+    },
+    "femme_M_standard": {
+     "z": 15,
+     "skinRef": "#FC9B52",
+     "f": "outfit-costume_heros__femme_M_standard",
+     "skin": "outfit-costume_heros__femme_M_standard__peau"
+    },
+    "femme_L_pulpeuse": {
+     "z": 15,
+     "skinRef": "#FB9E51",
+     "f": "outfit-costume_heros__femme_L_pulpeuse",
+     "skin": "outfit-costume_heros__femme_L_pulpeuse__peau"
+    }
+   }
+  },
+  {
+   "cat": "outfit",
+   "k": "costume_vintage",
+   "n": "Costume vintage",
+   "life": "active",
+   "eco": {
+    "price": {
+     "g": 600
+    }
+   },
+   "img": {
+    "homme_S_muscle": {
+     "z": 15,
+     "f": "outfit-costume_vintage__homme_S_muscle",
+     "hide": "outfit-costume_vintage__homme_S_muscle__cache"
+    },
+    "homme_M_normal": {
+     "z": 15,
+     "f": "outfit-costume_vintage__homme_M_normal",
+     "hide": "outfit-costume_vintage__homme_M_normal__cache"
+    },
+    "homme_L_corpulent": {
+     "z": 15,
+     "f": "outfit-costume_vintage__homme_L_corpulent",
+     "hide": "outfit-costume_vintage__homme_L_corpulent__cache"
+    },
+    "femme_S_fine": {
+     "z": 15,
+     "f": "outfit-costume_vintage__femme_S_fine",
+     "hide": "outfit-costume_vintage__femme_S_fine__cache"
+    },
+    "femme_M_standard": {
+     "z": 15,
+     "f": "outfit-costume_vintage__femme_M_standard",
+     "hide": "outfit-costume_vintage__femme_M_standard__cache"
+    },
+    "femme_L_pulpeuse": {
+     "z": 15,
+     "f": "outfit-costume_vintage__femme_L_pulpeuse",
+     "hide": "outfit-costume_vintage__femme_L_pulpeuse__cache"
+    }
+   }
+  },
+  {
+   "cat": "outfit",
+   "k": "gilet_tactique",
+   "n": "Gilet tactique",
+   "life": "active",
+   "eco": {
+    "price": {
+     "g": 300,
+     "c": 1500
+    }
+   },
+   "img": {
+    "homme_S_muscle": {
+     "z": 15,
+     "f": "outfit-gilet_tactique__homme_S_muscle"
+    },
+    "homme_M_normal": {
+     "z": 15,
+     "f": "outfit-gilet_tactique__homme_M_normal"
+    },
+    "homme_L_corpulent": {
+     "z": 15,
+     "f": "outfit-gilet_tactique__homme_L_corpulent"
+    },
+    "femme_S_fine": {
+     "z": 15,
+     "skinRef": "#E79359",
+     "f": "outfit-gilet_tactique__femme_S_fine",
+     "skin": "outfit-gilet_tactique__femme_S_fine__peau",
+     "hide": "outfit-gilet_tactique__femme_S_fine__cache"
+    },
+    "femme_M_standard": {
+     "z": 15,
+     "f": "outfit-gilet_tactique__femme_M_standard"
+    },
+    "femme_L_pulpeuse": {
+     "z": 15,
+     "skinRef": "#F49D5D",
+     "f": "outfit-gilet_tactique__femme_L_pulpeuse",
+     "skin": "outfit-gilet_tactique__femme_L_pulpeuse__peau",
+     "hide": "outfit-gilet_tactique__femme_L_pulpeuse__cache"
+    }
+   }
+  },
+  {
+   "cat": "outfit",
+   "k": "prisonner",
+   "n": "Prisonnier",
+   "life": "active",
+   "eco": {
+    "price": {
+     "g": 300,
+     "c": 1500
+    }
+   },
+   "img": {
+    "homme_S_muscle": {
+     "z": 15,
+     "f": "outfit-prisonner__homme_S_muscle",
+     "hide": "outfit-prisonner__homme_S_muscle__cache"
+    },
+    "homme_M_normal": {
+     "z": 15,
+     "f": "outfit-prisonner__homme_M_normal",
+     "hide": "outfit-prisonner__homme_M_normal__cache"
+    },
+    "homme_L_corpulent": {
+     "z": 15,
+     "f": "outfit-prisonner__homme_L_corpulent",
+     "hide": "outfit-prisonner__homme_L_corpulent__cache"
+    },
+    "femme_S_fine": {
+     "z": 15,
+     "f": "outfit-prisonner__femme_S_fine",
+     "hide": "outfit-prisonner__femme_S_fine__cache"
+    },
+    "femme_M_standard": {
+     "z": 15,
+     "f": "outfit-prisonner__femme_M_standard",
+     "hide": "outfit-prisonner__femme_M_standard__cache"
+    },
+    "femme_L_pulpeuse": {
+     "z": 15,
+     "f": "outfit-prisonner__femme_L_pulpeuse",
+     "hide": "outfit-prisonner__femme_L_pulpeuse__cache"
+    }
+   }
+  },
+  {
+   "cat": "outfit",
+   "k": "pull_noir",
+   "n": "Sweat à capuche",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "legacy": [
+    "outfit_02_hoodie"
+   ],
+   "rc": {
+    "reference": "#2C2C2C"
+   },
+   "img": {
+    "homme_S_muscle": {
+     "z": 15,
+     "f": "outfit-pull_noir__homme_S_muscle",
+     "col": "outfit-pull_noir__homme_S_muscle__couleur"
+    },
+    "homme_M_normal": {
+     "z": 15,
+     "f": "outfit-pull_noir__homme_M_normal",
+     "col": "outfit-pull_noir__homme_M_normal__couleur"
+    },
+    "homme_L_corpulent": {
+     "z": 15,
+     "f": "outfit-pull_noir__homme_L_corpulent",
+     "col": "outfit-pull_noir__homme_L_corpulent__couleur"
+    },
+    "femme_S_fine": {
+     "z": 15,
+     "skinRef": "#FA9C56",
+     "f": "outfit-pull_noir__femme_S_fine",
+     "skin": "outfit-pull_noir__femme_S_fine__peau",
+     "hide": "outfit-pull_noir__femme_S_fine__cache",
+     "col": "outfit-pull_noir__femme_S_fine__couleur"
+    },
+    "femme_M_standard": {
+     "z": 15,
+     "skinRef": "#F7964F",
+     "f": "outfit-pull_noir__femme_M_standard",
+     "skin": "outfit-pull_noir__femme_M_standard__peau",
+     "hide": "outfit-pull_noir__femme_M_standard__cache",
+     "col": "outfit-pull_noir__femme_M_standard__couleur"
+    },
+    "femme_L_pulpeuse": {
+     "z": 15,
+     "skinRef": "#FC9F5B",
+     "f": "outfit-pull_noir__femme_L_pulpeuse",
+     "skin": "outfit-pull_noir__femme_L_pulpeuse__peau",
+     "hide": "outfit-pull_noir__femme_L_pulpeuse__cache",
+     "col": "outfit-pull_noir__femme_L_pulpeuse__couleur"
+    }
+   }
+  },
+  {
+   "cat": "outfit",
+   "k": "torse_nu",
+   "n": "Torse nu",
+   "sex": "m",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "img": {},
+   "builtin": true
+  },
+  {
+   "cat": "outfit",
+   "k": "tshirt_noir",
+   "n": "T-shirt noir",
+   "life": "active",
+   "eco": {
+    "price": null
+   },
+   "essential": true,
+   "legacy": [
+    "outfit_01_tshirt"
+   ],
+   "rc": {
+    "reference": "#242424"
+   },
+   "img": {
+    "homme_S_muscle": {
+     "z": 15,
+     "f": "outfit-tshirt_noir__homme_S_muscle",
+     "col": "outfit-tshirt_noir__homme_S_muscle__couleur"
+    },
+    "homme_M_normal": {
+     "z": 15,
+     "f": "outfit-tshirt_noir__homme_M_normal",
+     "col": "outfit-tshirt_noir__homme_M_normal__couleur"
+    },
+    "homme_L_corpulent": {
+     "z": 15,
+     "f": "outfit-tshirt_noir__homme_L_corpulent",
+     "col": "outfit-tshirt_noir__homme_L_corpulent__couleur"
+    },
+    "femme_S_fine": {
+     "z": 15,
+     "skinRef": "#FB9D56",
+     "f": "outfit-tshirt_noir__femme_S_fine",
+     "skin": "outfit-tshirt_noir__femme_S_fine__peau",
+     "hide": "outfit-tshirt_noir__femme_S_fine__cache",
+     "col": "outfit-tshirt_noir__femme_S_fine__couleur"
+    },
+    "femme_M_standard": {
+     "z": 21,
+     "f": "outfit-tshirt_noir__femme_M_standard",
+     "hide": "outfit-tshirt_noir__femme_M_standard__cache",
+     "col": "outfit-tshirt_noir__femme_M_standard__couleur"
+    },
+    "femme_L_pulpeuse": {
+     "z": 15,
+     "skinRef": "#FCA05D",
+     "f": "outfit-tshirt_noir__femme_L_pulpeuse",
+     "skin": "outfit-tshirt_noir__femme_L_pulpeuse__peau",
+     "hide": "outfit-tshirt_noir__femme_L_pulpeuse__cache",
+     "col": "outfit-tshirt_noir__femme_L_pulpeuse__couleur"
+    }
+   }
+  }
+ ],
+ "legacyKeys": {
+  "tenue": {
+   "outfit_01_tshirt": "tshirt_noir",
+   "outfit_03_chemise": "chemise_noire",
+   "outfit_02_hoodie": "pull_noir",
+   "outfit_07_superheros": "costume_heros",
+   "outfit_06_clown": "costume_clown",
+   "outfit_05_bling": "blingbling"
+  },
+  "morph": {
+   "01_mince": "homme_S_muscle",
+   "02_standard": "homme_M_normal",
+   "03_corpulent": "homme_L_corpulent",
+   "04_buste_fin": "femme_S_fine",
+   "05_buste_standard": "femme_M_standard",
+   "06_buste_large": "femme_L_pulpeuse"
+  },
+  "hair": {
+   "cheveux_f_tresse_longue": "cheveux_f_tresses_collees",
+   "hair_03": "cheveux_h_degrade_bas",
+   "hair_06": "cheveux_h_afro",
+   "hair_10": "cheveux_h_dreads"
+  }
+ },
+ "sansDessin": [
+  "outfit_04_veste",
+  "outfit_08_ninja",
+  "outfit_09_samourai",
+  "outfit_10_viking",
+  "outfit_11_astronaute",
+  "outfit_12_prisonnier",
+  "outfit_13_gangster_vintage",
+  "outfit_14_roi",
+  "outfit_15_cyber"
+ ]
+}
