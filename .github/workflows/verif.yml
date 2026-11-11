@@ -1,0 +1,29 @@
+# Vérifie que le vrai serveur répond (lancé à la main ou à chaque changement de ce fichier).
+name: Vérification du serveur en ligne
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/verif.yml', 'serveur.txt']
+jobs:
+  verif:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Le serveur répond en HTTPS
+        run: |
+          H=$(cat serveur.txt | tr -d ' \r\n')
+          for i in $(seq 1 60); do
+            if curl -sf "https://$H/healthcheck"; then echo; echo "OK après $i essais : https://$H"; break; fi
+            echo "pas encore prêt ($i)…"; sleep 20
+          done
+          curl -sf "https://$H/healthcheck"
+      - name: Connexion d'un joueur et porte-monnaie
+        run: |
+          H=$(cat serveur.txt | tr -d ' \r\n')
+          T=$(curl -sf -u "outdo-public:" -X POST "https://$H/v2/account/authenticate/device?create=true&username=verif_ci" \
+              -H 'Content-Type: application/json' -d '{"id":"verification-ci-0000000001"}' | python3 -c "import json,sys;print(json.load(sys.stdin)['token'])")
+          echo "connexion OK"
+          curl -sf -H "Authorization: Bearer $T" -X POST "https://$H/v2/rpc/wallet_get" -H 'Content-Type: application/json' -d '""'
+          echo; echo "porte-monnaie OK"
