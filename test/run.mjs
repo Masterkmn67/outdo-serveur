@@ -81,17 +81,17 @@ ok(w.coins === 0 && w.gems === 0, 'nouveau joueur : 0 pièce, 0 gemme');
 
 console.log('— Cadeau de bienvenue');
 const dora = await login(`dora-${rnd}-xxxxxxxxx`, `dora_${rnd}`);
-r = await rpc(dora, 'welcome_claim');
-ok(r.given === true && r.wallet.coins === 500 && r.wallet.gems === 50, 'nouveau joueur : 500 pièces et 50 gemmes de bienvenue');
-r = await rpc(dora, 'welcome_claim');
-ok(r.given === false && r.wallet.coins === 500, 'le cadeau de bienvenue ne se reçoit qu’une fois');
+let wr = await rpc(dora, 'welcome_claim');
+ok(wr.given === true && wr.wallet.coins === 500 && wr.wallet.gems === 50, 'nouveau joueur : 500 pièces et 50 gemmes de bienvenue');
+wr = await rpc(dora, 'welcome_claim');
+ok(wr.given === false && wr.wallet.coins === 500, 'le cadeau de bienvenue ne se reçoit qu’une fois');
 const meInfo = await rpc(dora, 'me');
 ok(meInfo.userId === dora.user_id && meInfo.admin === false, 'le joueur connaît son identifiant serveur');
-r = await rpc(dora, 'solo_reward', { won: true, factor: 0.5 });
-ok(r.coins === 40, `partie à plusieurs avec absence : part réduite par le facteur (reçu ${r.coins})`);
+wr = await rpc(dora, 'solo_reward', { won: true, factor: 0.5 });
+ok(wr.coins === 40, `partie à plusieurs avec absence : part réduite par le facteur (reçu ${wr.coins})`);
 const eve = await login(`eve-${rnd}-xxxxxxxxxx`, `eve_${rnd}`);
-r = await rpc(eve, 'solo_reward', { won: false, factor: 7 });
-ok(r.coins === 20, 'un facteur trafiqué (plus grand que 1) ne fait pas gagner plus');
+wr = await rpc(eve, 'solo_reward', { won: false, factor: 7 });
+ok(wr.coins === 20, 'un facteur trafiqué (plus grand que 1) ne fait pas gagner plus');
 
 console.log('— Récompense d’une partie contre les bots');
 let r = await rpc(alice, 'solo_reward', { won: true, daily: true, coins: 999999 });
