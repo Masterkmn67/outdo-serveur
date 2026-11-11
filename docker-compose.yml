@@ -55,6 +55,7 @@ services:
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./web:/srv/web:ro
+      - /opt/outdo-etat:/srv/etat:ro
       - caddy_data:/data
     ports:
       - "80:80"

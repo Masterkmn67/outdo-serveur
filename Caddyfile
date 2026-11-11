@@ -5,6 +5,12 @@
 	handle @api {
 		reverse_proxy nakama:7350
 	}
+	# état du serveur (sans secret) : version, conteneurs, journal des mises à jour
+	handle /etat.txt {
+		root * /srv/etat
+		header Cache-Control "no-store"
+		file_server
+	}
 	# version web du jeu (ouvrir le lien sur le téléphone, « Ajouter à l'écran d'accueil »)
 	handle {
 		root * /srv/web
