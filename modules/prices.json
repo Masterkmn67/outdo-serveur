@@ -1,0 +1,86 @@
+{
+ "items": {
+  "aura:energie": {
+   "g": 1000
+  },
+  "aura:etincelles": {
+   "c": 2500,
+   "g": 300
+  },
+  "aura:etoiles": {
+   "c": 2500,
+   "g": 300
+  },
+  "aura:feu": {
+   "g": 600
+  },
+  "dos:galaxie": {
+   "g": 250
+  },
+  "dos:leopard": {
+   "c": 1500,
+   "g": 200
+  },
+  "dos:neon": {
+   "c": 1500,
+   "g": 200
+  },
+  "dos:or": {
+   "g": 350
+  },
+  "emote:fort": {
+   "c": 1200,
+   "g": 150
+  },
+  "emote:oups": {
+   "c": 800,
+   "g": 100
+  },
+  "emote:pasmal": {
+   "c": 1200,
+   "g": 150
+  },
+  "emote:tour": {
+   "g": 250
+  },
+  "tapis:bois": {
+   "c": 1500,
+   "g": 200
+  },
+  "tapis:casino": {
+   "g": 300
+  },
+  "tapis:espace": {
+   "g": 500
+  },
+  "tenue:blingbling": {
+   "g": 1200
+  },
+  "tenue:combinaison_spatiale": {
+   "g": 1500
+  },
+  "tenue:costume_clown": {
+   "g": 600
+  },
+  "tenue:costume_heros": {
+   "g": 1200
+  },
+  "tenue:costume_vintage": {
+   "g": 600
+  },
+  "tenue:gilet_tactique": {
+   "c": 1500,
+   "g": 300
+  },
+  "tenue:prisonner": {
+   "c": 1500,
+   "g": 300
+  },
+  "victoire:billets": {
+   "g": 500
+  },
+  "victoire:feux": {
+   "g": 900
+  }
+ }
+}

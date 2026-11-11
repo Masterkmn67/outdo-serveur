@@ -23,11 +23,16 @@ var OP_START = 6; // hôte : lance la partie
 var OP_RESULT = 7; // hôte : classement final → le serveur verse les récompenses
 var OP_REWARD = 8; // serveur → chacun : récompense versée
 var OP_ERROR = 9; // serveur → un joueur : action refusée
+// petite « base de données de table » (même fonctionnement que dans claude.ai : le jeu actuel s'en sert tel quel)
+var OP_DOC_SET = 20; // joueur → serveur : écrit un document de la table (mp/CODE ou mp/CODE/p/<lui>)
+var OP_DOC = 21; // serveur → autres : un document a changé
+var OP_DOC_ALL = 22; // serveur → nouvel arrivant : tous les documents de la table
+var DOC_MAX = 400000; // taille maximale d'un document (octets)
 
 // barème des récompenses (même que contre les bots dans le jeu)
 var REWARD_BASE = 20, REWARD_WIN = 60, REWARD_DAILY = 100;
 var SOLO_MAX_COINS = REWARD_BASE + REWARD_WIN + REWARD_DAILY; // le maximum possible pour une partie
-var SOLO_MIN_GAP_SEC = 90; // une partie ne dure jamais moins que ça
+var SOLO_MIN_GAP_SEC = 90; // une partie ne dure jamais moins que ça (réglable : OUTDO_SOLO_GAP_SEC)
 var MULTI_MIN_SEC = 120;
 
 // ---------------------------------------------------------------------------------------------
@@ -112,10 +117,15 @@ function rpcSoloReward(ctx, logger, nk, payload) {
   var meta = readOne(nk, 'meta', 'solo', ctx.userId);
   var v = (meta && meta.value) || {};
   var t = nowSec();
-  if (v.last && t - v.last < SOLO_MIN_GAP_SEC) throw new Error('Récompense déjà reçue : partie trop courte');
+  var gap = int(ctx.env && ctx.env['OUTDO_SOLO_GAP_SEC'], SOLO_MIN_GAP_SEC);
+  if (v.last && t - v.last < gap) throw new Error('Récompense déjà reçue : partie trop courte');
   var today = new Date().toISOString().slice(0, 10);
   if (daily && v.daily === today) daily = false; // le défi du jour ne paie qu'une fois par jour
-  var coins = REWARD_BASE + (won ? REWARD_WIN : 0) + (daily ? REWARD_DAILY : 0);
+  // partie à plusieurs : part réduite si le joueur a été absent (le téléphone ne peut que la baisser)
+  var factor = Number(p.factor);
+  if (!isFinite(factor) || factor > 1) factor = 1;
+  if (factor < 0) factor = 0;
+  var coins = Math.round((REWARD_BASE + (won ? REWARD_WIN : 0)) * factor) + (daily ? REWARD_DAILY : 0);
   if (coins > SOLO_MAX_COINS) coins = SOLO_MAX_COINS;
   writeOne(nk, 'meta', 'solo', ctx.userId, { last: t, daily: daily ? today : v.daily || '' }, meta ? meta.version : '*');
   nk.walletUpdate(ctx.userId, { coins: coins }, { reason: 'solo', won: won, daily: daily }, true);
@@ -126,9 +136,34 @@ function rpcSoloReward(ctx, logger, nk, payload) {
 // boutique
 // ---------------------------------------------------------------------------------------------
 
+// prix : fichier prices.json (fabriqué depuis le jeu à chaque mise à jour), puis corrections faites par le propriétaire
 function prices(nk) {
+  var out = {};
+  try {
+    var f = JSON.parse(nk.fileRead('prices.json'));
+    var items = (f && f.items) || {};
+    for (var k in items) if (Object.prototype.hasOwnProperty.call(items, k)) out[k] = items[k];
+  } catch (e) {}
   var r = readOne(nk, 'config', 'prices', SYSTEM_ID);
-  return (r && r.value && r.value.items) || {};
+  var over = (r && r.value && r.value.items) || {};
+  for (var k2 in over) if (Object.prototype.hasOwnProperty.call(over, k2)) out[k2] = over[k2];
+  return out;
+}
+
+// cadeau de bienvenue : une seule fois par compte
+var WELCOME_COINS = 500, WELCOME_GEMS = 50;
+function rpcWelcome(ctx, logger, nk, payload) {
+  requireUser(ctx);
+  var r = readOne(nk, 'meta', 'welcome', ctx.userId);
+  if (r) return JSON.stringify({ given: false, wallet: walletOf(nk, ctx.userId) });
+  writeOne(nk, 'meta', 'welcome', ctx.userId, { at: nowSec() }, '*');
+  nk.walletUpdate(ctx.userId, { coins: WELCOME_COINS, gems: WELCOME_GEMS }, { reason: 'bienvenue' }, true);
+  return JSON.stringify({ given: true, coins: WELCOME_COINS, gems: WELCOME_GEMS, wallet: walletOf(nk, ctx.userId) });
+}
+
+function rpcMe(ctx, logger, nk, payload) {
+  requireUser(ctx);
+  return JSON.stringify({ userId: ctx.userId, username: ctx.username, admin: isAdmin(ctx), wallet: walletOf(nk, ctx.userId) });
 }
 
 function rpcShopPrices(ctx, logger, nk, payload) {
@@ -261,9 +296,14 @@ function newCode() {
 function rpcPrivateCreate(ctx, logger, nk, payload) {
   requireUser(ctx);
   var p = parse(payload);
+  var wanted = String(p.code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
   for (var tries = 0; tries < 8; tries++) {
-    var code = newCode();
-    if (readOne(nk, 'codes', code, SYSTEM_ID)) continue;
+    var code = tries === 0 && wanted.length === 5 ? wanted : newCode();
+    var known = readOne(nk, 'codes', code, SYSTEM_ID);
+    if (known && nk.matchGet(known.value.matchId)) {
+      if (code === wanted) throw new Error('Code déjà pris');
+      continue;
+    }
     var matchId = nk.matchCreate('outdo_table', { code: code, owner: ctx.userId, bots: int(p.bots, 0), replaceAbsent: p.replaceAbsent !== false });
     writeOne(nk, 'codes', code, SYSTEM_ID, { matchId: matchId, at: nowSec() }, null, false);
     return JSON.stringify({ code: code, matchId: matchId });
@@ -339,6 +379,7 @@ function matchInit(ctx, logger, nk, params) {
     rewarded: false,
     lastSnap: null,
     emptyTicks: 0,
+    docs: {},
   };
   return { state: state, tickRate: 5, label: JSON.stringify({ code: state.code, auto: state.auto, open: true }) };
 }
@@ -368,6 +409,11 @@ function matchJoin(ctx, logger, nk, dispatcher, tick, state, presences) {
   pickHost(state);
   state.emptyTicks = 0;
   sendRoster(dispatcher, state);
+  // documents de la table (jeu actuel) : envoyés en une fois au nouvel arrivant
+  var dkeys = Object.keys(state.docs);
+  if (dkeys.length) {
+    for (var d = 0; d < presences.length; d++) dispatcher.broadcastMessage(OP_DOC_ALL, JSON.stringify(state.docs), [presences[d]], null, true);
+  }
   // un joueur qui revient reçoit tout de suite l'état de la partie
   if (state.lastSnap) {
     for (var j = 0; j < presences.length; j++) dispatcher.broadcastMessage(OP_SNAPSHOT, state.lastSnap, [presences[j]], null, true);
@@ -430,6 +476,20 @@ function matchLoop(ctx, logger, nk, dispatcher, tick, state, messages) {
         if (isHost || !state.presences[state.host]) break;
         // l'hôte apprend qui a envoyé le coup (le serveur l'atteste, impossible de jouer à la place d'un autre)
         dispatcher.broadcastMessage(OP_INTENT, JSON.stringify({ from: from, d: data }), [state.presences[state.host]], null, true);
+        break;
+      case OP_DOC_SET:
+        try {
+          if (data.length > DOC_MAX) break;
+          var ds = JSON.parse(data);
+          var path = String(ds.path || '');
+          var base = 'mp/' + state.code;
+          // un joueur écrit la fiche de la table ou SA fiche de joueur, jamais celle d'un autre
+          var allowed = path === base || path === base + '/p/' + from;
+          if (!allowed || !ds.data || typeof ds.data !== 'object') break;
+          var js = JSON.stringify({ path: path, data: ds.data });
+          state.docs[path] = ds.data;
+          dispatcher.broadcastMessage(OP_DOC, js, presenceList(state, from), null, true);
+        } catch (e) {}
         break;
       case OP_EMOJI:
         dispatcher.broadcastMessage(OP_EMOJI, JSON.stringify({ from: from, e: String(data).slice(0, 16) }), null, null, true);
@@ -503,6 +563,8 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc('admin_ban', rpcAdminBan);
   initializer.registerRpc('private_create', rpcPrivateCreate);
   initializer.registerRpc('private_join', rpcPrivateJoin);
+  initializer.registerRpc('welcome_claim', rpcWelcome);
+  initializer.registerRpc('me', rpcMe);
   initializer.registerMatch('outdo_table', {
     matchInit: matchInit,
     matchJoinAttempt: matchJoinAttempt,

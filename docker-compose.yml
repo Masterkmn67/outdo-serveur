@@ -33,8 +33,12 @@ services:
         --console.username ${OUTDO_CONSOLE_USER:-admin}
         --console.password ${OUTDO_CONSOLE_PASSWORD:-change-moi}
         --runtime.js_entrypoint outdo.js
+        --socket.max_message_size_bytes 1048576
+        --socket.read_buffer_size_bytes 1048576
+        --socket.write_buffer_size_bytes 1048576
         --runtime.env OUTDO_ADMINS=${OUTDO_ADMINS:-}
         --runtime.env OUTDO_MULTI_MIN_SEC=${OUTDO_MULTI_MIN_SEC:-120}
+        --runtime.env OUTDO_SOLO_GAP_SEC=${OUTDO_SOLO_GAP_SEC:-90}
     volumes:
       - ./modules:/nakama/data/modules:ro
     ports:
@@ -50,6 +54,7 @@ services:
       OUTDO_DOMAIN: ${OUTDO_DOMAIN:-localhost}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./web:/srv/web:ro
       - caddy_data:/data
     ports:
       - "80:80"

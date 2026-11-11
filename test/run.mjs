@@ -66,7 +66,7 @@ async function waitFor(inbox, pred, what, ms = 8000) {
   ok(false, `${what} (rien reçu en ${ms} ms)`);
 }
 
-const OP = { ROSTER: 1, SNAPSHOT: 2, INTENT: 3, EMOJI: 4, SETTINGS: 5, START: 6, RESULT: 7, REWARD: 8, ERROR: 9 };
+const OP = { ROSTER: 1, SNAPSHOT: 2, INTENT: 3, EMOJI: 4, SETTINGS: 5, START: 6, RESULT: 7, REWARD: 8, ERROR: 9, DOC_SET: 20, DOC: 21, DOC_ALL: 22 };
 const rnd = Math.random().toString(36).slice(2, 8);
 
 // ---------------------------------------------------------------------------------------------
@@ -78,6 +78,20 @@ ok((await rpc(owner, 'admin_whoami')).admin === true, 'le compte propriétaire e
 ok((await rpc(alice, 'admin_whoami')).admin === false, 'un joueur normal n’est pas Admin');
 let w = await rpc(alice, 'wallet_get');
 ok(w.coins === 0 && w.gems === 0, 'nouveau joueur : 0 pièce, 0 gemme');
+
+console.log('— Cadeau de bienvenue');
+const dora = await login(`dora-${rnd}-xxxxxxxxx`, `dora_${rnd}`);
+r = await rpc(dora, 'welcome_claim');
+ok(r.given === true && r.wallet.coins === 500 && r.wallet.gems === 50, 'nouveau joueur : 500 pièces et 50 gemmes de bienvenue');
+r = await rpc(dora, 'welcome_claim');
+ok(r.given === false && r.wallet.coins === 500, 'le cadeau de bienvenue ne se reçoit qu’une fois');
+const meInfo = await rpc(dora, 'me');
+ok(meInfo.userId === dora.user_id && meInfo.admin === false, 'le joueur connaît son identifiant serveur');
+r = await rpc(dora, 'solo_reward', { won: true, factor: 0.5 });
+ok(r.coins === 40, `partie à plusieurs avec absence : part réduite par le facteur (reçu ${r.coins})`);
+const eve = await login(`eve-${rnd}-xxxxxxxxxx`, `eve_${rnd}`);
+r = await rpc(eve, 'solo_reward', { won: false, factor: 7 });
+ok(r.coins === 20, 'un facteur trafiqué (plus grand que 1) ne fait pas gagner plus');
 
 console.log('— Récompense d’une partie contre les bots');
 let r = await rpc(alice, 'solo_reward', { won: true, daily: true, coins: 999999 });
@@ -99,7 +113,9 @@ ok(r.wallet.gems === 0, 'un retrait ne fait jamais passer sous zéro');
 
 console.log('— Boutique');
 await rpc(owner, 'admin_set_prices', { items: { 'tenue:blingbling': { g: 900, c: 9000 }, 'aura:energie': { g: 5000 } } });
-ok(Object.keys((await rpc(alice, 'shop_prices')).items).length === 2, 'les prix sont lisibles par tous');
+let items = (await rpc(alice, 'shop_prices')).items;
+ok(items['tenue:blingbling'].g === 900 && items['aura:energie'].g === 5000, 'les prix (fichier du jeu + corrections du propriétaire) sont lisibles par tous');
+ok(Object.keys(items).length > 10, `les prix du jeu sont chargés depuis prices.json (${Object.keys(items).length} objets)`);
 await rpcFails(alice, 'shop_buy', { id: 'aura:energie', with: 'gems' }, 'achat refusé si le solde ne suffit pas');
 await rpcFails(alice, 'shop_buy', { id: 'tenue:inconnue', with: 'gems' }, 'achat refusé pour un objet inconnu');
 r = await rpc(alice, 'shop_buy', { id: 'tenue:blingbling', with: 'gems' });
@@ -181,6 +197,32 @@ ok(JSON.parse(m.data).coins === 20, 'Alice (absente quelques secondes) reçoit s
 await B.socket.sendMatchState(created.matchId, OP.RESULT, JSON.stringify({ winners: [bob.user_id] }));
 await sleep(500);
 ok((await rpc(bob, 'wallet_get')).coins === before + 80, 'une fin de partie ne paie qu’une seule fois');
+
+console.log('— Table du jeu actuel (documents relayés par le serveur)');
+const fz = await login(`fred-${rnd}-xxxxxxxxx`, `fred_${rnd}`), gz = await login(`gina-${rnd}-xxxxxxxxx`, `gina_${rnd}`);
+const want = 'Q' + rnd.toUpperCase().replace(/[^A-Z2-9]/g, 'K').slice(0, 4).padEnd(4, 'K');
+const t1 = await rpc(fz, 'private_create', { code: want });
+ok(t1.code === want, `le jeu peut choisir son code de table (${want})`);
+await rpcFails(gz, 'private_create', { code: want }, 'un code déjà utilisé ne peut pas être repris');
+const F = await live(fz), G = await live(gz);
+await F.socket.joinMatch(t1.matchId);
+const enc = (o) => new TextEncoder().encode(JSON.stringify(o));
+await F.socket.sendMatchState(t1.matchId, OP.DOC_SET, enc({ path: `mp/${want}`, data: { status: 'lobby', host: fz.user_id } }));
+await F.socket.sendMatchState(t1.matchId, OP.DOC_SET, enc({ path: `mp/${want}/p/${fz.user_id}`, data: { uid: fz.user_id, seen: 1 } }));
+await sleep(400);
+const j2 = await rpc(gz, 'private_join', { code: want });
+await G.socket.joinMatch(j2.matchId);
+let all = JSON.parse((await waitFor(G.inbox, (x) => x.op === OP.DOC_ALL, 'documents à l’arrivée')).data);
+ok(all[`mp/${want}`].status === 'lobby' && all[`mp/${want}/p/${fz.user_id}`].seen === 1, 'le nouvel arrivant reçoit tous les documents de la table');
+await G.socket.sendMatchState(t1.matchId, OP.DOC_SET, enc({ path: `mp/${want}/p/${gz.user_id}`, data: { uid: gz.user_id, seen: 2 } }));
+m = await waitFor(F.inbox, (x) => x.op === OP.DOC, 'fiche de Gina');
+ok(JSON.parse(m.data).path === `mp/${want}/p/${gz.user_id}`, 'la fiche d’un joueur arrive chez les autres');
+await G.socket.sendMatchState(t1.matchId, OP.DOC_SET, enc({ path: `mp/${want}/p/${fz.user_id}`, data: { uid: fz.user_id, left: true } }));
+await sleep(400);
+ok(!F.inbox.some((x) => x.op === OP.DOC), 'un joueur ne peut pas écrire la fiche d’un autre');
+await G.socket.sendMatchState(t1.matchId, OP.DOC_SET, enc({ path: `mp/${want}`, data: { status: 'playing', big: 'x'.repeat(150000) } }));
+m = await waitFor(F.inbox, (x) => x.op === OP.DOC, 'gros document');
+ok(JSON.parse(m.data).data.big.length === 150000, 'un gros état de partie (150 ko) passe sans problème');
 
 console.log('— Bannissement');
 await rpc(owner, 'admin_ban', { userId: bob.user_id });
