@@ -19,6 +19,15 @@ jobs:
             echo "pas encore prêt ($i)…"; sleep 20
           done
           curl -sf "https://$H/healthcheck"
+      - name: La version web du jeu est en ligne
+        run: |
+          H=$(cat serveur.txt | tr -d ' \r\n')
+          for i in $(seq 1 45); do
+            if curl -sf "https://$H/" | grep -q flutter_bootstrap && curl -sfI "https://$H/main.dart.js" | grep -q " 200"; then echo "jeu en ligne après $i essais"; break; fi
+            echo "jeu pas encore en ligne ($i)…"; sleep 20
+          done
+          curl -sf "https://$H/" | grep -q flutter_bootstrap
+          curl -sf "https://$H/manifest.json"
       - name: Connexion d'un joueur et porte-monnaie
         run: |
           H=$(cat serveur.txt | tr -d ' \r\n')
