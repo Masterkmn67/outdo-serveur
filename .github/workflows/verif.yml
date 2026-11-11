@@ -22,6 +22,8 @@ jobs:
       - name: La version web du jeu est en ligne
         run: |
           H=$(cat serveur.txt | tr -d ' \r\n')
+          echo "--- page d'accueil actuelle :"; curl -s -i "https://$H/" | head -c 600; echo
+          echo "--- version.json :"; curl -s -i "https://$H/version.json" | head -c 400; echo
           for i in $(seq 1 45); do
             if curl -sf "https://$H/" | grep -q flutter_bootstrap && curl -sfI "https://$H/main.dart.js" | grep -q " 200"; then echo "jeu en ligne après $i essais"; break; fi
             echo "jeu pas encore en ligne ($i)…"; sleep 20
