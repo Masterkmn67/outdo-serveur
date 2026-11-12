@@ -9,16 +9,24 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#FFD93D">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="OutDO!">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <link rel="icon" type="image/png" href="favicon.png"/>
   <title>OutDO!</title>
   <link rel="manifest" href="manifest.json">
-  <style>html,body{margin:0;height:100%;background:#FFD93D;overflow:hidden}</style>
+  <style>
+    html,body{margin:0;height:100%;background:#FFD93D;overflow:hidden}
+    /* Le jeu occupe toujours tout l'écran : sur iPhone (icône sur l'écran d'accueil), la hauteur donnée par le
+       navigateur est fausse (plus courte de la barre d'état) ; on prend la vraie hauteur de l'écran. */
+    #outdo-app{position:fixed;left:0;top:0;width:100%;height:100%;height:100dvh}
+    /* icône de l'écran d'accueil : le jeu commence sous la barre d'état et descend jusqu'en bas de l'écran */
+    @media (display-mode: standalone){#outdo-app{top:env(safe-area-inset-top);height:calc(100vh - env(safe-area-inset-top));height:calc(100lvh - env(safe-area-inset-top))}}
+  </style>
 </head>
 <body>
   <script>
+    window.outdoStandalone = !!(window.navigator.standalone || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches));
     // Pont vers la base de données de la page (réglages du mode Admin), quand le jeu tourne dans claude.ai.
     window.outdoBg = function (c) {
       document.documentElement.style.background = c; document.body.style.background = c;
@@ -103,6 +111,7 @@
       }
     };
   </script>
+  <div id="outdo-app"></div>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
