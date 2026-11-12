@@ -169,7 +169,7 @@ function rpcFriendInvite(ctx, logger, nk, payload) {
   var code = String(p.code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
   if (code.length !== 5) throw new Error('Code de table invalide');
   var ids = (p.userIds || []).slice(0, 5);
-  var fl = nk.friendsList(ctx.userId, 1000, 0);
+  var fl = nk.friendsList(ctx.userId, 100, 0);
   var ok = {};
   for (var i = 0; i < ((fl && fl.friends) || []).length; i++) {
     var f = fl.friends[i];
