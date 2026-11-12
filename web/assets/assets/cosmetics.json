@@ -1,0 +1,312 @@
+{
+ "tenue": [
+  {
+   "k": "torse_nu",
+   "n": "Torse nu",
+   "r": "commun",
+   "price": null
+  },
+  {
+   "k": "debardeur",
+   "n": "Débardeur noir",
+   "r": "commun",
+   "price": null
+  },
+  {
+   "k": "tshirt_noir",
+   "n": "T-shirt noir",
+   "r": "commun",
+   "price": null
+  },
+  {
+   "k": "chemise_noire",
+   "n": "Chemise noire",
+   "r": "commun",
+   "price": null
+  },
+  {
+   "k": "pull_noir",
+   "n": "Sweat à capuche",
+   "r": "commun",
+   "price": null
+  },
+  {
+   "k": "costume_heros",
+   "n": "Super-héros",
+   "r": "commun",
+   "price": null
+  },
+  {
+   "k": "costume_clown",
+   "n": "Clown",
+   "r": "commun",
+   "price": null
+  },
+  {
+   "k": "blingbling",
+   "n": "Bling-bling",
+   "r": "commun",
+   "price": null
+  },
+  {
+   "k": "gilet_tactique",
+   "n": "Gilet tactique",
+   "r": "commun",
+   "price": null
+  }
+ ],
+ "acc": [
+  {
+   "k": "accessory_01_aucun",
+   "n": "Aucun",
+   "r": "commun",
+   "price": null
+  }
+ ],
+ "dos": [
+  {
+   "k": "classique",
+   "n": "Classique",
+   "r": "commun",
+   "price": null
+  },
+  {
+   "k": "argent",
+   "n": "Argent",
+   "r": "epique",
+   "level": 15
+  },
+  {
+   "k": "orniv",
+   "n": "Or",
+   "r": "legend",
+   "level": 30
+  },
+  {
+   "k": "coeurs",
+   "n": "Cœurs",
+   "r": "commun",
+   "price": null
+  },
+  {
+   "k": "or",
+   "n": "Or massif",
+   "r": "epique",
+   "price": {
+    "g": 350
+   }
+  },
+  {
+   "k": "neon",
+   "n": "Néon",
+   "r": "rare",
+   "price": {
+    "g": 200,
+    "c": 1500
+   }
+  },
+  {
+   "k": "leopard",
+   "n": "Léopard",
+   "r": "rare",
+   "price": {
+    "g": 200,
+    "c": 1500
+   }
+  },
+  {
+   "k": "galaxie",
+   "n": "Galaxie",
+   "r": "epique",
+   "price": {
+    "g": 250
+   }
+  }
+ ],
+ "aura": [
+  {
+   "k": "aucune",
+   "n": "Sans aura",
+   "r": "commun",
+   "price": null
+  },
+  {
+   "k": "etincelles",
+   "n": "Étincelles",
+   "r": "rare",
+   "price": {
+    "g": 300,
+    "c": 2500
+   }
+  },
+  {
+   "k": "etoiles",
+   "n": "Ronde d’étoiles",
+   "r": "rare",
+   "price": {
+    "g": 300,
+    "c": 2500
+   }
+  },
+  {
+   "k": "feu",
+   "n": "Flammes",
+   "r": "epique",
+   "price": {
+    "g": 600
+   }
+  },
+  {
+   "k": "energie",
+   "n": "Énergie dorée",
+   "r": "legend",
+   "price": {
+    "g": 1000
+   }
+  }
+ ],
+ "tapis": [
+  {
+   "k": "vert",
+   "n": "Vert classique",
+   "r": "commun",
+   "price": null
+  },
+  {
+   "k": "nuit",
+   "n": "Bleu nuit",
+   "r": "commun",
+   "price": null
+  },
+  {
+   "k": "casino",
+   "n": "Rouge casino",
+   "r": "rare",
+   "price": {
+    "g": 300
+   }
+  },
+  {
+   "k": "bois",
+   "n": "Bois massif",
+   "r": "rare",
+   "price": {
+    "g": 200,
+    "c": 1500
+   }
+  },
+  {
+   "k": "espace",
+   "n": "Espace",
+   "r": "epique",
+   "price": {
+    "g": 500
+   }
+  }
+ ],
+ "victoire": [
+  {
+   "k": "confettis",
+   "n": "Confettis",
+   "r": "commun",
+   "price": null
+  },
+  {
+   "k": "billets",
+   "n": "Pluie de billets",
+   "r": "epique",
+   "price": {
+    "g": 500
+   }
+  },
+  {
+   "k": "feux",
+   "n": "Feux d’artifice",
+   "r": "legend",
+   "price": {
+    "g": 900
+   }
+  }
+ ],
+ "emote": [
+  {
+   "k": "gg",
+   "n": "GG !",
+   "r": "commun",
+   "price": null
+  },
+  {
+   "k": "paf",
+   "n": "PAF !",
+   "r": "commun",
+   "price": null
+  },
+  {
+   "k": "oups",
+   "n": "Oups…",
+   "r": "commun",
+   "price": {
+    "g": 100,
+    "c": 800
+   }
+  },
+  {
+   "k": "fort",
+   "n": "Trop fort",
+   "r": "rare",
+   "price": {
+    "g": 150,
+    "c": 1200
+   }
+  },
+  {
+   "k": "pasmal",
+   "n": "Même pas mal",
+   "r": "rare",
+   "price": {
+    "g": 150,
+    "c": 1200
+   }
+  },
+  {
+   "k": "tour",
+   "n": "À qui le tour ?",
+   "r": "epique",
+   "price": {
+    "g": 250
+   }
+  }
+ ],
+ "cadre": [
+  {
+   "k": "aucun",
+   "n": "Sans cadre",
+   "r": "commun",
+   "price": null
+  },
+  {
+   "k": "bronze",
+   "n": "Bronze",
+   "r": "rare",
+   "level": 5
+  },
+  {
+   "k": "argent",
+   "n": "Argent",
+   "r": "epique",
+   "level": 15
+  },
+  {
+   "k": "or",
+   "n": "Or",
+   "r": "legend",
+   "level": 30
+  },
+  {
+   "k": "platine",
+   "n": "Platine",
+   "r": "legend",
+   "trophy": "platine"
+  }
+ ]
+}
