@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['.github/workflows/verif.yml', 'serveur.txt']
+    paths: ['.github/workflows/verif.yml', 'serveur.txt', 'verifier.txt']
 jobs:
   verif:
     runs-on: ubuntu-latest
@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Le serveur répond en HTTPS
         run: |
-          H=$(cat serveur.txt | tr -d ' \r\n')
+          H=$(head -1 serveur.txt | tr -d ' \r\n')
           for i in $(seq 1 60); do
             if curl -sf "https://$H/healthcheck"; then echo; echo "OK après $i essais : https://$H"; break; fi
             echo "pas encore prêt ($i)…"; sleep 20
@@ -21,7 +21,7 @@ jobs:
           curl -sf "https://$H/healthcheck"
       - name: La version web du jeu est en ligne
         run: |
-          H=$(cat serveur.txt | tr -d ' \r\n')
+          H=$(head -1 serveur.txt | tr -d ' \r\n')
           echo "--- page d'accueil actuelle :"; curl -s -i "https://$H/" | head -c 600; echo
           echo "--- état du serveur :"; curl -s "https://$H/etat.txt" | head -40; echo
           echo "--- état (copie) :"; curl -s "https://$H/_etat.txt" | head -80; echo
@@ -33,7 +33,7 @@ jobs:
           curl -sf "https://$H/manifest.json" || echo "PAS DE VERSION WEB"
       - name: Connexion d'un joueur et porte-monnaie
         run: |
-          H=$(cat serveur.txt | tr -d ' \r\n')
+          H=$(head -1 serveur.txt | tr -d ' \r\n')
           T=$(curl -sf -u "outdo-public:" -X POST "https://$H/v2/account/authenticate/device?create=true&username=verif_ci" \
               -H 'Content-Type: application/json' -d '{"id":"verification-ci-0000000001"}' | python3 -c "import json,sys;print(json.load(sys.stdin)['token'])")
           echo "connexion OK"
