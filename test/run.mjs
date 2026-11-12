@@ -308,6 +308,28 @@ console.log('— Confirmation de l’adresse e-mail');
   ok((await rpc(m3, 'email_status')).required === false, 'service retiré : retour au fonctionnement d’avant');
 }
 
+
+console.log('— Nettoyage des comptes « Joueur »');
+{
+  const j1 = await login(`jou1-${rnd}-xxxxxxxxx`, `jou1_${rnd}`);
+  await client.updateAccount(j1, { display_name: 'Joueur' });
+  const j2 = await login(`jou2-${rnd}-xxxxxxxxx`, `jou2_${rnd}`);
+  await client.updateAccount(j2, { display_name: 'Joueur' });
+  await client.linkEmail(j2, { email: `j2${rnd}@exemple.fr`, password: 'motdepasse1' });
+  const j3 = await login(`jou3-${rnd}-xxxxxxxxx`, `jou3_${rnd}`);
+  await client.updateAccount(j3, { display_name: 'Kevin' });
+  await rpcFails(alice, 'admin_cleanup', {}, 'nettoyage réservé au propriétaire');
+  const pv = await rpc(owner, 'admin_cleanup', {});
+  const ids = pv.players.map((p) => p.id);
+  ok(ids.includes(j1.user_id), 'un compte « Joueur » sans e-mail est proposé');
+  ok(!ids.includes(j2.user_id), 'un compte protégé par e-mail n’est jamais proposé');
+  ok(!ids.includes(j3.user_id), 'un compte avec un vrai pseudo n’est jamais proposé');
+  ok(!ids.includes(owner.user_id), 'le propriétaire n’est jamais proposé');
+  const del = await rpc(owner, 'admin_cleanup', { apply: true, ids: [j1.user_id, j3.user_id] });
+  ok(del.deleted === 1, 'seul le compte « Joueur » est supprimé (même si on en demande plus)');
+  ok(!(await rpc(owner, 'admin_cleanup', {})).players.some((p) => p.id === j1.user_id), 'le compte a disparu');
+}
+
 console.log('— Bannissement');
 await rpc(owner, 'admin_ban', { userId: bob.user_id });
 let banned = false;

@@ -604,6 +604,48 @@ function rpcAdNames(ctx, logger, nk, payload) {
   return JSON.stringify({ names: out });
 }
 
+// nettoyage : comptes jamais personnalisés (pseudo « Joueur » ou vide), sans e-mail, hors propriétaires.
+// { apply: false } → liste ; { apply: true, ids: [...] } → supprime ceux de la liste qui correspondent toujours.
+function adminList(ctx) {
+  return String((ctx.env && ctx.env['OUTDO_ADMINS']) || '').split(',').map(function (s) { return s.trim(); }).filter(function (s) { return s.length > 0; });
+}
+
+function cleanupCandidates(ctx, nk) {
+  var rows = nk.sqlQuery(
+    "SELECT id, username, display_name, update_time FROM users WHERE id <> $1 AND (email IS NULL OR email = '') AND (display_name IS NULL OR display_name = '' OR lower(display_name) = 'joueur') ORDER BY update_time DESC LIMIT 1000",
+    [SYSTEM_ID]
+  );
+  var adm = adminList(ctx);
+  var out = [];
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    if (adm.indexOf(r.id) >= 0 || adm.indexOf(r.username) >= 0 || r.id === ctx.userId) continue;
+    out.push({ id: r.id, name: r.display_name || '(sans pseudo)', at: String(r.update_time) });
+  }
+  return out;
+}
+
+function rpcAdminCleanup(ctx, logger, nk, payload) {
+  requireAdmin(ctx);
+  var p = parse(payload);
+  var list = cleanupCandidates(ctx, nk);
+  if (p.apply !== true) return JSON.stringify({ count: list.length, players: list.slice(0, 50) });
+  var want = {};
+  (p.ids || []).forEach(function (x) { want[String(x)] = true; });
+  var done = 0;
+  for (var i = 0; i < list.length; i++) {
+    if (!want[list[i].id]) continue;
+    try {
+      nk.accountDeleteId(list[i].id, false);
+      done++;
+    } catch (e) {
+      logger.warn('suppression impossible pour un compte : %s', String(e));
+    }
+  }
+  logger.info('nettoyage : %d compte(s) « Joueur » supprimé(s) par %s', done, ctx.username);
+  return JSON.stringify({ deleted: done });
+}
+
 // ---------------------------------------------------------------------------------------------
 // parties privées (code) et avec des inconnus (matchmaking)
 // ---------------------------------------------------------------------------------------------
@@ -897,6 +939,7 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc('email_confirm', rpcEmailConfirm);
   initializer.registerRpc('email_status', rpcEmailStatus);
   initializer.registerRpc('admin_mail', rpcAdminMail);
+  initializer.registerRpc('admin_cleanup', rpcAdminCleanup);
   initializer.registerBeforeLinkEmail(beforeLinkEmail);
   initializer.registerRpc('ad_get', rpcAdGet);
   initializer.registerRpc('ad_list', rpcAdList);
