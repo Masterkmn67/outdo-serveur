@@ -224,6 +224,21 @@ await G.socket.sendMatchState(t1.matchId, OP.DOC_SET, enc({ path: `mp/${want}`, 
 m = await waitFor(F.inbox, (x) => x.op === OP.DOC, 'gros document');
 ok(JSON.parse(m.data).data.big.length === 150000, 'un gros état de partie (150 ko) passe sans problème');
 
+console.log('— Amis et invitations');
+const h1 = await login(`hugo-${rnd}-xxxxxxxxx`, `hugo_${rnd}`), h2 = await login(`ines-${rnd}-xxxxxxxxx`, `ines_${rnd}`), h3 = await login(`jade-${rnd}-xxxxxxxxx`, `jade_${rnd}`);
+await client.addFriends(h1, undefined, [`ines_${rnd}`]);
+let fr = await client.listFriends(h2);
+ok(fr.friends.some((f) => f.user.id === h1.user_id && f.state === 2), 'demande d’ami reçue');
+await client.addFriends(h2, [h1.user_id]);
+fr = await client.listFriends(h1);
+ok(fr.friends.some((f) => f.user.id === h2.user_id && f.state === 0), 'demande acceptée : amis des deux côtés');
+let inv = await rpc(h1, 'friend_invite', { code: 'ABCDE', userIds: [h2.user_id, h3.user_id] });
+ok(inv.sent === 1, 'invitation envoyée seulement aux vrais amis (pas à une inconnue)');
+const nl = await client.listNotifications(h2, 10);
+const invN = (nl.notifications || []).find((n) => n.code === 100);
+ok(invN && invN.content.code === 'ABCDE', 'l’ami reçoit l’invitation avec le code de la table');
+await rpcFails(h1, 'friend_invite', { code: 'XX', userIds: [h2.user_id] }, 'invitation refusée sans code valide');
+
 console.log('— Bannissement');
 await rpc(owner, 'admin_ban', { userId: bob.user_id });
 let banned = false;

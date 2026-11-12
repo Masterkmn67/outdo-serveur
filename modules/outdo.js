@@ -161,6 +161,32 @@ function rpcWelcome(ctx, logger, nk, payload) {
   return JSON.stringify({ given: true, coins: WELCOME_COINS, gems: WELCOME_GEMS, wallet: walletOf(nk, ctx.userId) });
 }
 
+// invitation d'amis à une table : { code, userIds: [...] } — seulement des amis confirmés, au plus 5
+var NOTIF_INVITE = 100;
+function rpcFriendInvite(ctx, logger, nk, payload) {
+  requireUser(ctx);
+  var p = parse(payload);
+  var code = String(p.code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (code.length !== 5) throw new Error('Code de table invalide');
+  var ids = (p.userIds || []).slice(0, 5);
+  var fl = nk.friendsList(ctx.userId, 1000, 0);
+  var ok = {};
+  for (var i = 0; i < ((fl && fl.friends) || []).length; i++) {
+    var f = fl.friends[i];
+    if (f && f.user) ok[f.user.userId] = true;
+  }
+  var me = nk.accountGetId(ctx.userId);
+  var name = (me && me.user && (me.user.displayName || me.user.username)) || ctx.username;
+  var sent = 0;
+  for (var j = 0; j < ids.length; j++) {
+    var uid = String(ids[j]);
+    if (!ok[uid]) continue;
+    nk.notificationSend(uid, name + ' t’invite à une partie', { code: code, from: name, fromId: ctx.userId }, NOTIF_INVITE, ctx.userId, true);
+    sent++;
+  }
+  return JSON.stringify({ sent: sent });
+}
+
 function rpcMe(ctx, logger, nk, payload) {
   requireUser(ctx);
   return JSON.stringify({ userId: ctx.userId, username: ctx.username, admin: isAdmin(ctx), wallet: walletOf(nk, ctx.userId) });
@@ -565,6 +591,7 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc('private_join', rpcPrivateJoin);
   initializer.registerRpc('welcome_claim', rpcWelcome);
   initializer.registerRpc('me', rpcMe);
+  initializer.registerRpc('friend_invite', rpcFriendInvite);
   initializer.registerMatch('outdo_table', {
     matchInit: matchInit,
     matchJoinAttempt: matchJoinAttempt,
