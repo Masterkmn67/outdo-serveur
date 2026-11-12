@@ -703,9 +703,9 @@ function matchInit(ctx, logger, nk, params) {
     lastSnap: null,
     emptyTicks: 0,
     docs: {},
-    tickRate: 5,
+    tickRate: 10,
   };
-  var tr = Math.max(1, Math.min(30, int(ctx.env && ctx.env['OUTDO_TICK_RATE'], 5)));
+  var tr = Math.max(1, Math.min(30, int(ctx.env && ctx.env['OUTDO_TICK_RATE'], 10)));
   state.tickRate = tr;
   return { state: state, tickRate: tr, label: JSON.stringify({ code: state.code, auto: state.auto, open: true }) };
 }
