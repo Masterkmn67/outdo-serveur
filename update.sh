@@ -61,5 +61,12 @@ rm -f /etc/cron.d/outdo-update
   echo
   echo "--- journal des mises à jour (fin)"
   tail -n 40 "$LOG"
+  echo
+  echo "--- Caddy (fin du journal)"
+  docker compose -f /opt/outdo/docker-compose.yml --profile https logs --tail 15 caddy 2>&1 | cut -c1-300
+  echo "--- Nakama (fin du journal)"
+  docker compose -f /opt/outdo/docker-compose.yml --profile https logs --tail 10 nakama 2>&1 | cut -c1-300
 } > "$ETAT/etat.txt.tmp" 2>&1 && mv "$ETAT/etat.txt.tmp" "$ETAT/etat.txt"
+# copie lisible aussi depuis la version web (si la page /etat.txt ne répond pas)
+cp "$ETAT/etat.txt" /opt/outdo/web/_etat.txt 2>/dev/null
 tail -n 2000 "$LOG" > "$LOG.tmp" && mv "$LOG.tmp" "$LOG"
