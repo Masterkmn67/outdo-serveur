@@ -265,10 +265,10 @@ await rpc(owner, 'ad_set', { path: 'roles/main', data: { schema: 1, members: {} 
 ok((await rpc(alice, 'ad_identity')).canEdit === false, 'rôle retiré');
 const wl = await rpc(owner, 'ad_list', { path: 'wallets', limit: 500 });
 ok(wl.docs.some((d) => d.id === alice.user_id && typeof d.data.coins === 'number'), 'liste des vrais joueurs avec leurs porte-monnaie du serveur');
-const before = (await rpc(alice, 'wallet_get')).gems;
+const gemsBefore = (await rpc(alice, 'wallet_get')).gems;
 await rpc(owner, 'ad_set', { path: `gifts/${alice.user_id}`, data: { list: [{ id: 'g1', coins: 0, gems: 7 }] } });
 await rpc(owner, 'ad_set', { path: `gifts/${alice.user_id}`, data: { list: [{ id: 'g1', coins: 0, gems: 7 }] } });
-ok((await rpc(alice, 'wallet_get')).gems === before + 7, 'cadeau du tableau de bord vraiment versé, une seule fois (double clic sans effet)');
+ok((await rpc(alice, 'wallet_get')).gems === gemsBefore + 7, 'cadeau du tableau de bord vraiment versé, une seule fois (double clic sans effet)');
 await rpcFails(alice, 'ad_set', { path: `gifts/${alice.user_id}`, data: { list: [{ id: 'triche', gems: 999 }] } }, 'un joueur ne peut pas s’offrir des gemmes');
 await rpcFails(alice, 'ad_set', { path: '../x/y', data: {} }, 'chemin invalide refusé');
 ok(Object.values((await rpc(alice, 'ad_names', { ids: [owner.user_id] })).names).length === 1, 'noms des joueurs');
@@ -286,6 +286,35 @@ try {
 ok(banned, 'un joueur banni ne peut plus se connecter');
 await rpc(owner, 'admin_ban', { userId: bob.user_id, unban: true });
 ok(!!(await login(`bob-${rnd}-xxxxxxxxxx`, `bob_${rnd}`)).token, 'après levée du bannissement, il peut revenir');
+
+
+console.log('— Fluidité : délai de relais d’un message de table');
+{
+  const p1 = await login(`lat1-${rnd}-xxxxxxxxx`, `lat1_${rnd}`), p2 = await login(`lat2-${rnd}-xxxxxxxxx`, `lat2_${rnd}`);
+  const t = await rpc(p1, 'private_create', { bots: 0 });
+  const S1 = await live(p1), S2 = await live(p2);
+  await S1.socket.joinMatch(t.matchId);
+  await S2.socket.joinMatch(t.matchId);
+  await sleep(500);
+  const lat = [];
+  S2.socket.onmatchdata = (md) => {
+    if (md.op_code !== OP.EMOJI) return;
+    const e = JSON.parse(dec.decode(md.data)).e;
+    const sent = Number(e);
+    if (sent) lat.push(Date.now() % 1e9 - sent);
+  };
+  for (let i = 0; i < 40; i++) {
+    await S1.socket.sendMatchState(t.matchId, OP.EMOJI, String(Date.now() % 1e9));
+    await sleep(73);
+  }
+  await sleep(1000);
+  lat.sort((a, b) => a - b);
+  const avg = Math.round(lat.reduce((a, b) => a + b, 0) / Math.max(1, lat.length));
+  console.log(`MESURE tickRate=${process.env.OUTDO_TICK_RATE || 5} : ${lat.length} messages, moyenne ${avg} ms, médiane ${lat[lat.length >> 1]} ms, pire ${lat[lat.length - 1]} ms`);
+  ok(lat.length === 40, 'tous les messages relayés');
+  S1.socket.disconnect(false);
+  S2.socket.disconnect(false);
+}
 
 console.log(`\nTout est bon : ${n} vérifications réussies.`);
 process.exit(0);

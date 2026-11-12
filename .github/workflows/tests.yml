@@ -15,6 +15,10 @@ jobs:
   serveur:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        tick: ['5', '10']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,6 +29,7 @@ jobs:
         env:
           OUTDO_ADMINS: owner_test
           OUTDO_MULTI_MIN_SEC: '0'
+          OUTDO_TICK_RATE: ${{ matrix.tick }}
         run: |
           docker compose up -d
           for i in $(seq 1 90); do
@@ -38,6 +43,10 @@ jobs:
         run: |
           npm install --no-audit --no-fund
           node run.mjs
+          echo "--- charge du serveur après les tests :"
+          docker stats --no-stream --format '{{.Name}} CPU {{.CPUPerc}} MÉMOIRE {{.MemUsage}}'
+        env:
+          OUTDO_TICK_RATE: ${{ matrix.tick }}
       - name: Journal du serveur (en cas d'échec)
         if: failure()
         working-directory: .

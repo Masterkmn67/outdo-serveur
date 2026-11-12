@@ -577,8 +577,11 @@ function matchInit(ctx, logger, nk, params) {
     lastSnap: null,
     emptyTicks: 0,
     docs: {},
+    tickRate: 5,
   };
-  return { state: state, tickRate: 5, label: JSON.stringify({ code: state.code, auto: state.auto, open: true }) };
+  var tr = Math.max(1, Math.min(30, int(ctx.env && ctx.env['OUTDO_TICK_RATE'], 5)));
+  state.tickRate = tr;
+  return { state: state, tickRate: tr, label: JSON.stringify({ code: state.code, auto: state.auto, open: true }) };
 }
 
 function matchJoinAttempt(ctx, logger, nk, dispatcher, tick, state, presence, metadata) {
@@ -724,7 +727,7 @@ function matchLoop(ctx, logger, nk, dispatcher, tick, state, messages) {
   // table vide : fermée au bout de 10 minutes (code libéré)
   if (presenceList(state, '').length === 0) {
     state.emptyTicks++;
-    if (state.emptyTicks > 5 * 60 * 10) {
+    if (state.emptyTicks > state.tickRate * 60 * 10) {
       if (state.code) nk.storageDelete([{ collection: 'codes', key: state.code, userId: SYSTEM_ID }]);
       return null;
     }
