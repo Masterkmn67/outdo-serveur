@@ -9,3 +9,4 @@ ni le jeu, ni les dessins, ni aucun mot de passe (ceux-ci sont créés sur le se
 - `update.sh` : mise à jour automatique toutes les 5 minutes depuis ce dépôt.
 - `admins.txt` : comptes propriétaires.
 - `test/run.mjs` : tests de bout en bout (lancés par GitHub Actions à chaque envoi).
+- `etat.txt` : état public du serveur (version, conteneurs, journal des mises à jour).
