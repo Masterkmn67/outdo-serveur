@@ -308,6 +308,177 @@ function rpcAdminBan(ctx, logger, nk, payload) {
 }
 
 // ---------------------------------------------------------------------------------------------
+// mode Admin du jeu (tableau de bord : placement des avatars, versions, préproduction, rôles,
+// joueurs de test, journal) — mêmes documents et MÊMES RÈGLES que dans l'artefact claude.ai :
+//   tout le monde lit, les administrateurs écrivent ; roles : écrit par le propriétaire seulement ;
+//   audit : lu par les administrateurs, chacun écrit SON journal (audit/<lui>) ;
+//   sandbox : lu et écrit par tous les joueurs connectés ;
+//   wallets / gifts : vrais porte-monnaie du serveur (lecture admin, cadeau = vrai versement).
+// Propriétaire = comptes de OUTDO_ADMINS ; administrateurs = rôle « admin » dans roles/main.
+// ---------------------------------------------------------------------------------------------
+
+var AD_PREFIX = 'ad:';
+var AD_MAX = 400000;
+
+function adSplit(path, isDoc) {
+  var segs = String(path || '').split('/').filter(function (x) { return x.length > 0; });
+  if (!segs.length || segs.length > 6) throw new Error('Chemin invalide');
+  for (var i = 0; i < segs.length; i++) if (!/^[A-Za-z0-9_.\-]{1,100}$/.test(segs[i])) throw new Error('Chemin invalide');
+  if (isDoc && segs.length % 2 !== 0) throw new Error('Chemin invalide');
+  if (!isDoc && segs.length % 2 !== 1) throw new Error('Chemin invalide');
+  if (isDoc) return { collection: AD_PREFIX + segs.slice(0, -1).join('/'), key: segs[segs.length - 1], segs: segs };
+  return { collection: AD_PREFIX + segs.join('/'), key: '', segs: segs };
+}
+
+function adRoleOf(nk, userId) {
+  var r = readOne(nk, AD_PREFIX + 'roles', 'main', SYSTEM_ID);
+  var m = (r && r.value && r.value.members) || {};
+  var e = m[userId];
+  return (e && e.role) || '';
+}
+
+// niveau du joueur : 'owner' > 'admin' > 'interact' (connecté)
+function adLevel(ctx, nk) {
+  if (isAdmin(ctx)) return 3;
+  if (ctx.userId && adRoleOf(nk, ctx.userId) === 'admin') return 2;
+  return ctx.userId ? 1 : 0;
+}
+
+// règles : renvoie le niveau minimal { read, write } pour un chemin (segments)
+function adRule(segs, uid) {
+  var top = segs[0];
+  var self = segs.length >= 2 && segs[1] === uid;
+  if (top === 'roles') return { read: 1, write: 3 };
+  if (top === 'audit') return self ? { read: 1, write: 1 } : { read: 2, write: 3 };
+  if (top === 'sandbox') return { read: 1, write: 1 };
+  if (top === 'wallets') return self ? { read: 1, write: 9 } : { read: 2, write: 9 };
+  if (top === 'gifts') return self ? { read: 1, write: 3 } : { read: 2, write: 3 };
+  if (top === 'mp') return { read: 9, write: 9 }; // les tables passent par le serveur de partie
+  return { read: 1, write: 2 };
+}
+
+function adCheck(ctx, nk, segs, what) {
+  var lv = adLevel(ctx, nk);
+  var rule = adRule(segs, ctx.userId);
+  if (lv < rule[what]) throw new Error(what === 'read' ? 'Lecture refusée' : 'Écriture refusée (droits insuffisants)');
+  return lv;
+}
+
+function walletDoc(nk, uid) {
+  var a = nk.accountGetId(uid);
+  if (!a || !a.user) return null;
+  var w = a.wallet || {};
+  return { coins: int(w.coins, 0), gems: int(w.gems, 0), name: a.user.displayName || a.user.username, at: Date.parse(a.user.updateTime || '') || 0 };
+}
+
+function rpcAdIdentity(ctx, logger, nk, payload) {
+  requireUser(ctx);
+  var a = nk.accountGetId(ctx.userId);
+  var name = (a && a.user && (a.user.displayName || a.user.username)) || ctx.username;
+  var lv = adLevel(ctx, nk);
+  return JSON.stringify({ id: ctx.userId, name: name, isOwner: lv >= 3, canEdit: lv >= 2 });
+}
+
+function rpcAdGet(ctx, logger, nk, payload) {
+  requireUser(ctx);
+  var sp = adSplit(parse(payload).path, true);
+  adCheck(ctx, nk, sp.segs, 'read');
+  if (sp.segs[0] === 'wallets') return JSON.stringify({ data: walletDoc(nk, sp.key) });
+  var r = readOne(nk, sp.collection, sp.key, SYSTEM_ID);
+  return JSON.stringify({ data: r ? r.value : null });
+}
+
+function rpcAdList(ctx, logger, nk, payload) {
+  requireUser(ctx);
+  var p = parse(payload);
+  var sp = adSplit(p.path, false);
+  adCheck(ctx, nk, sp.segs.concat(['*']), 'read');
+  var limit = Math.max(1, Math.min(500, int(p.limit, 200)));
+  var out = [];
+  if (sp.segs.length === 1 && sp.segs[0] === 'wallets') {
+    var rows = nk.sqlQuery('SELECT id, username, display_name, wallet, update_time FROM users WHERE id <> $1 ORDER BY update_time DESC LIMIT ' + limit, [SYSTEM_ID]);
+    for (var i = 0; i < rows.length; i++) {
+      var w = {};
+      try { w = typeof rows[i].wallet === 'string' ? JSON.parse(rows[i].wallet) : rows[i].wallet || {}; } catch (e) {}
+      out.push({ id: rows[i].id, data: { coins: int(w.coins, 0), gems: int(w.gems, 0), name: rows[i].display_name || rows[i].username, at: Date.parse(String(rows[i].update_time)) || 0 } });
+    }
+    return JSON.stringify({ docs: out });
+  }
+  var cursor = '';
+  while (out.length < limit) {
+    var res = nk.storageList(SYSTEM_ID, sp.collection, Math.min(100, limit - out.length), cursor);
+    var objs = (res && res.objects) || [];
+    for (var j = 0; j < objs.length; j++) out.push({ id: objs[j].key, data: objs[j].value });
+    cursor = (res && res.cursor) || '';
+    if (!cursor || !objs.length) break;
+  }
+  return JSON.stringify({ docs: out });
+}
+
+function rpcAdSet(ctx, logger, nk, payload) {
+  requireUser(ctx);
+  if (payload && payload.length > AD_MAX) throw new Error('Document trop gros');
+  var p = parse(payload);
+  var sp = adSplit(p.path, true);
+  adCheck(ctx, nk, sp.segs, 'write');
+  var data = p.data;
+  if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('Données invalides');
+  if (sp.segs[0] === 'gifts') {
+    // cadeau du propriétaire : chaque nouvel envoi (identifiant jamais vu) est VRAIMENT versé, une seule fois
+    var prev = readOne(nk, sp.collection, sp.key, SYSTEM_ID);
+    var seen = {};
+    var pl = (prev && prev.value && prev.value.list) || [];
+    for (var i = 0; i < pl.length; i++) if (pl[i] && pl[i].id) seen[pl[i].id] = true;
+    var list = Array.isArray(data.list) ? data.list : [];
+    for (var j = 0; j < list.length; j++) {
+      var g = list[j];
+      if (!g || !g.id || seen[g.id]) continue;
+      seen[g.id] = true;
+      var coins = int(g.coins, 0), gems = int(g.gems, 0);
+      if (Math.abs(coins) > 99999 || Math.abs(gems) > 99999) continue;
+      var w = walletOf(nk, sp.key);
+      if (w.coins + coins < 0) coins = -w.coins || 0;
+      if (w.gems + gems < 0) gems = -w.gems || 0;
+      if (coins || gems) nk.walletUpdate(sp.key, { coins: coins, gems: gems }, { reason: 'cadeau', by: ctx.username, note: String(g.note || '').slice(0, 120) }, true);
+    }
+  }
+  writeOne(nk, sp.collection, sp.key, SYSTEM_ID, data, null, false);
+  return JSON.stringify({ ok: true });
+}
+
+function rpcAdDel(ctx, logger, nk, payload) {
+  requireUser(ctx);
+  var sp = adSplit(parse(payload).path, true);
+  adCheck(ctx, nk, sp.segs, 'write');
+  nk.storageDelete([{ collection: sp.collection, key: sp.key, userId: SYSTEM_ID }]);
+  return JSON.stringify({ ok: true });
+}
+
+function rpcAdSearch(ctx, logger, nk, payload) {
+  requireUser(ctx);
+  if (adLevel(ctx, nk) < 3) throw new Error('Réservé au propriétaire');
+  var q = String(parse(payload).q || '').trim().toLowerCase().slice(0, 40);
+  var rows = nk.sqlQuery(
+    "SELECT id, username, display_name FROM users WHERE id <> $1 AND (lower(display_name) LIKE $2 OR lower(username) LIKE $2 OR id::text = $3) ORDER BY update_time DESC LIMIT 20",
+    [SYSTEM_ID, '%' + q.replace(/[%_]/g, '') + '%', q]
+  );
+  var out = [];
+  for (var i = 0; i < rows.length; i++) out.push({ id: rows[i].id, name: rows[i].display_name || rows[i].username });
+  return JSON.stringify({ users: out });
+}
+
+function rpcAdNames(ctx, logger, nk, payload) {
+  requireUser(ctx);
+  var ids = (parse(payload).ids || []).slice(0, 100).map(String).filter(function (x) { return /^[0-9a-f-]{36}$/.test(x); });
+  var out = {};
+  if (ids.length) {
+    var us = nk.usersGetId(ids) || [];
+    for (var i = 0; i < us.length; i++) out[us[i].userId] = us[i].displayName || us[i].username;
+  }
+  return JSON.stringify({ names: out });
+}
+
+// ---------------------------------------------------------------------------------------------
 // parties privées (code) et avec des inconnus (matchmaking)
 // ---------------------------------------------------------------------------------------------
 
@@ -592,6 +763,13 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc('welcome_claim', rpcWelcome);
   initializer.registerRpc('me', rpcMe);
   initializer.registerRpc('friend_invite', rpcFriendInvite);
+  initializer.registerRpc('ad_identity', rpcAdIdentity);
+  initializer.registerRpc('ad_get', rpcAdGet);
+  initializer.registerRpc('ad_list', rpcAdList);
+  initializer.registerRpc('ad_set', rpcAdSet);
+  initializer.registerRpc('ad_del', rpcAdDel);
+  initializer.registerRpc('ad_search', rpcAdSearch);
+  initializer.registerRpc('ad_names', rpcAdNames);
   initializer.registerMatch('outdo_table', {
     matchInit: matchInit,
     matchJoinAttempt: matchJoinAttempt,
