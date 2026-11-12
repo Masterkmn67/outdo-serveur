@@ -19,7 +19,7 @@
     html,body{margin:0;height:100%;background:#FFD93D;overflow:hidden}
     /* Le jeu occupe toujours tout l'écran : sur iPhone (icône sur l'écran d'accueil), la hauteur donnée par le
        navigateur est fausse (plus courte de la barre d'état) ; on prend la vraie hauteur de l'écran. */
-    #outdo-app{position:fixed;left:0;top:0;width:100%;height:100%;height:100dvh}
+    #outdo-app{position:fixed;left:0;top:0;right:0;bottom:0}
     #outdo-probe{position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
   </style>
 </head>
@@ -113,24 +113,11 @@
   <div id="outdo-app"></div>
   <div id="outdo-probe"></div>
   <script>
-    // Icône de l'écran d'accueil (iPhone) : le navigateur annonce une hauteur fausse. On cale le jeu sur la vraie
-    // taille de l'écran : il commence sous la barre d'état et va jusqu'en bas (barre du bas collée en bas).
-    (function () {
-      function fit() {
-        var el = document.getElementById('outdo-app');
-        if (!window.outdoStandalone || !el) return;
-        var pr = document.getElementById('outdo-probe');
-        var top = pr ? parseFloat(getComputedStyle(pr).paddingTop) || 0 : 0;
-        window.outdoSafeBottom = pr ? parseFloat(getComputedStyle(pr).paddingBottom) || 0 : 0;
-        var portrait = window.innerHeight >= window.innerWidth;
-        var full = portrait ? Math.max(screen.height, screen.width) : Math.min(screen.height, screen.width);
-        el.style.top = top + 'px';
-        el.style.height = Math.max(100, full - top) + 'px';
-      }
-      fit();
-      window.addEventListener('resize', fit);
-      window.addEventListener('orientationchange', function () { setTimeout(fit, 300); });
-    })();
+    // Marges de l'écran (encoche / barre d'état en haut), mesurées au moment où le jeu les demande.
+    window.outdoSafeTop = function () {
+      var pr = document.getElementById('outdo-probe');
+      return pr ? (parseFloat(getComputedStyle(pr).paddingTop) || 0) : 0;
+    };
   </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
