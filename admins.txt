@@ -1,1 +1,2 @@
 # Comptes propriétaires (mode Admin du serveur) : un nom d'utilisateur Nakama par ligne.
+6d1d9113-acce-4063-8a77-8be17fc88fc8
