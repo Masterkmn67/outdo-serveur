@@ -275,6 +275,39 @@ ok(Object.values((await rpc(alice, 'ad_names', { ids: [owner.user_id] })).names)
 await rpcFails(alice, 'ad_search', { q: 'a' }, 'recherche de joueurs réservée au propriétaire');
 ok((await rpc(owner, 'ad_search', { q: 'alice' })).users.some((u) => u.id === alice.user_id), 'le propriétaire trouve un joueur par son nom');
 
+
+console.log('— Confirmation de l’adresse e-mail');
+{
+  const m1 = await login(`mail-${rnd}-xxxxxxxxx`, `mail_${rnd}`);
+  ok((await rpc(m1, 'email_start', { email: `m${rnd}@exemple.fr` })).required === false, 'sans service d’envoi : la protection marche comme avant');
+  await client.linkEmail(m1, { email: `m${rnd}@exemple.fr`, password: 'motdepasse1' });
+  ok(true, 'e-mail lié sans confirmation tant que le service n’est pas en place');
+  await rpcFails(alice, 'admin_mail', { key: 'TEST-NO-SEND', sender: 'jeu@exemple.fr' }, 'seul le propriétaire règle le service d’e-mail');
+  const cf = await rpc(owner, 'admin_mail', { key: 'TEST-NO-SEND', sender: 'jeu@exemple.fr' });
+  ok(cf.configured === true && !JSON.stringify(cf).includes('TEST-NO-SEND'), 'service réglé, la clé n’est jamais renvoyée');
+  const m2 = await login(`mail2-${rnd}-xxxxxxxxx`, `mail2_${rnd}`);
+  const mail2 = `Deux${rnd}@Exemple.fr`;
+  let linked = true;
+  try { await client.linkEmail(m2, { email: mail2, password: 'motdepasse1' }); } catch (e) { linked = false; }
+  ok(!linked, 'service en place : impossible de lier un e-mail non confirmé');
+  await rpcFails(m2, 'email_start', { email: `m${rnd}@exemple.fr` }, 'adresse déjà utilisée par un autre compte refusée');
+  const st = await rpc(m2, 'email_start', { email: mail2 });
+  ok(st.required === true && /^\d{6}$/.test(st.testCode), 'code à 6 chiffres envoyé');
+  await rpcFails(m2, 'email_start', { email: mail2 }, 'pas deux codes dans la même minute');
+  await rpcFails(m2, 'email_confirm', { code: '000000' === st.testCode ? '111111' : '000000' }, 'mauvais code refusé');
+  ok((await rpc(m2, 'email_confirm', { code: st.testCode })).ok === true, 'bon code accepté');
+  await client.linkEmail(m2, { email: mail2.toLowerCase(), password: 'motdepasse1' });
+  ok(true, 'e-mail confirmé : lié au compte');
+  const back = await client.authenticateEmail(mail2.toLowerCase(), 'motdepasse1', false);
+  ok(back.user_id === m2.user_id, 'le compte se retrouve avec l’e-mail confirmé');
+  const m3 = await login(`mail3-${rnd}-xxxxxxxxx`, `mail3_${rnd}`);
+  const s3 = await rpc(m3, 'email_start', { email: `trois${rnd}@exemple.fr` });
+  for (let i = 0; i < 5; i++) { try { await client.rpc(m3, 'email_confirm', { code: '0000001' }); } catch (_) {} }
+  await rpcFails(m3, 'email_confirm', { code: s3.testCode }, 'après 5 essais ratés, même le bon code est refusé (anti-devinette)');
+  await rpc(owner, 'admin_mail', { clear: true });
+  ok((await rpc(m3, 'email_status')).required === false, 'service retiré : retour au fonctionnement d’avant');
+}
+
 console.log('— Bannissement');
 await rpc(owner, 'admin_ban', { userId: bob.user_id });
 let banned = false;

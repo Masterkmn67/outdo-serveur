@@ -30,6 +30,7 @@ jobs:
           OUTDO_ADMINS: owner_test
           OUTDO_MULTI_MIN_SEC: '0'
           OUTDO_TICK_RATE: ${{ matrix.tick }}
+          OUTDO_MAIL_TEST: '1'
         run: |
           docker compose up -d
           for i in $(seq 1 90); do

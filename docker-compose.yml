@@ -40,6 +40,7 @@ services:
         --runtime.env OUTDO_MULTI_MIN_SEC=${OUTDO_MULTI_MIN_SEC:-120}
         --runtime.env OUTDO_SOLO_GAP_SEC=${OUTDO_SOLO_GAP_SEC:-90}
         --runtime.env OUTDO_TICK_RATE=${OUTDO_TICK_RATE:-5}
+        --runtime.env OUTDO_MAIL_TEST=${OUTDO_MAIL_TEST:-0}
     volumes:
       - ./modules:/nakama/data/modules:ro
     ports:

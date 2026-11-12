@@ -308,6 +308,132 @@ function rpcAdminBan(ctx, logger, nk, payload) {
 }
 
 // ---------------------------------------------------------------------------------------------
+// confirmation de l'adresse e-mail (code à 6 chiffres envoyé par e-mail, via le service Brevo)
+//  - la clé du service est donnée par le propriétaire dans le jeu (Admin serveur) : rangée sur le serveur,
+//    jamais lisible par un joueur, jamais renvoyée, jamais écrite dans les journaux ;
+//  - tant qu'aucune clé n'est donnée, la protection du compte marche comme avant (sans confirmation) ;
+//  - limites : 1 envoi par minute, 8 par jour, code valable 15 min, 5 essais.
+// ---------------------------------------------------------------------------------------------
+
+var MAIL_CODE_SEC = 15 * 60, MAIL_GAP_SEC = 60, MAIL_PER_DAY = 8, MAIL_TRIES = 5;
+
+function mailConf(nk) {
+  var r = readOne(nk, 'config', 'mail', SYSTEM_ID);
+  var v = r && r.value;
+  return v && v.key && v.sender ? v : null;
+}
+
+function mailTestMode(ctx, conf) {
+  return conf && conf.key === 'TEST-NO-SEND' && ctx.env && ctx.env['OUTDO_MAIL_TEST'] === '1';
+}
+
+function normMail(m) {
+  var e = String(m || '').trim().toLowerCase();
+  if (e.length > 120 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) throw new Error('Adresse e-mail invalide');
+  return e;
+}
+
+function codeHash(nk, uid, code) {
+  return nk.sha256Hash(uid + ':' + code);
+}
+
+function sendMail(nk, logger, conf, to, subject, html) {
+  var body = JSON.stringify({ sender: { name: conf.senderName || 'OutDO!', email: conf.sender }, to: [{ email: to }], subject: subject, htmlContent: html });
+  var res = nk.httpRequest('https://api.brevo.com/v3/smtp/email', 'post', { 'api-key': conf.key, 'content-type': 'application/json', accept: 'application/json' }, body, 10000);
+  if (!res || res.code < 200 || res.code >= 300) {
+    logger.warn('envoi d’e-mail refusé par le service (code %d)', res ? res.code : 0);
+    throw new Error('Envoi de l’e-mail impossible pour le moment');
+  }
+}
+
+function rpcEmailStart(ctx, logger, nk, payload) {
+  requireUser(ctx);
+  var email = normMail(parse(payload).email);
+  var conf = mailConf(nk);
+  if (!conf) return JSON.stringify({ required: false });
+  var used = nk.sqlQuery('SELECT id FROM users WHERE lower(email) = $1 AND id <> $2 LIMIT 1', [email, ctx.userId]);
+  if (used && used.length) throw new Error('Cette adresse e-mail est déjà utilisée par un autre compte');
+  var prev = readOne(nk, 'verif', 'email', ctx.userId);
+  var pv = (prev && prev.value) || {};
+  var now = nowSec();
+  var day = Math.floor(now / 86400);
+  var sentToday = pv.day === day ? int(pv.sentToday, 0) : 0;
+  if (pv.sentAt && now - pv.sentAt < MAIL_GAP_SEC) throw new Error('Attends une minute avant de redemander un code');
+  if (sentToday >= MAIL_PER_DAY) throw new Error('Trop de codes demandés aujourd’hui : réessaie demain');
+  var code = String(100000 + Math.floor(Math.random() * 900000));
+  var html = '<div style="font-family:Arial,sans-serif;font-size:16px"><p>Bonjour !</p><p>Voici ton code pour confirmer ton adresse e-mail dans <b>OutDO!</b> :</p>' +
+    '<p style="font-size:32px;font-weight:bold;letter-spacing:6px">' + code + '</p><p>Il est valable 15 minutes. Si tu n’as rien demandé, ignore simplement ce message.</p></div>';
+  if (!mailTestMode(ctx, conf)) sendMail(nk, logger, conf, email, 'Ton code OutDO! : ' + code, html);
+  writeOne(nk, 'verif', 'email', ctx.userId, {
+    email: email, hash: codeHash(nk, ctx.userId, code), exp: now + MAIL_CODE_SEC, tries: 0, sentAt: now, day: day, sentToday: sentToday + 1,
+    verified: pv.verified || '', verifiedAt: pv.verifiedAt || 0,
+  }, null, false);
+  var out = { required: true, sent: true };
+  if (mailTestMode(ctx, conf)) out.testCode = code; // tests automatiques seulement (jamais sur le vrai serveur)
+  return JSON.stringify(out);
+}
+
+function rpcEmailConfirm(ctx, logger, nk, payload) {
+  requireUser(ctx);
+  var code = String(parse(payload).code || '').replace(/\D/g, '');
+  var r = readOne(nk, 'verif', 'email', ctx.userId);
+  var v = r && r.value;
+  if (!v || !v.hash) throw new Error('Demande d’abord un code');
+  if (nowSec() > v.exp) throw new Error('Code expiré : demandes-en un nouveau');
+  if (v.tries >= MAIL_TRIES) throw new Error('Trop d’essais : demande un nouveau code');
+  if (codeHash(nk, ctx.userId, code) !== v.hash) {
+    v.tries = int(v.tries, 0) + 1;
+    writeOne(nk, 'verif', 'email', ctx.userId, v, r.version, false);
+    throw new Error('Code incorrect (' + (MAIL_TRIES - v.tries) + ' essai(s) restant(s))');
+  }
+  v.verified = v.email;
+  v.verifiedAt = nowSec();
+  v.hash = '';
+  writeOne(nk, 'verif', 'email', ctx.userId, v, r.version, false);
+  return JSON.stringify({ ok: true, email: v.email });
+}
+
+function rpcEmailStatus(ctx, logger, nk, payload) {
+  requireUser(ctx);
+  var r = readOne(nk, 'verif', 'email', ctx.userId);
+  var v = (r && r.value) || {};
+  return JSON.stringify({ required: !!mailConf(nk), verified: v.verified || '' });
+}
+
+// avant de lier un e-mail au compte : il doit avoir été confirmé (si le service d'envoi est en place)
+function beforeLinkEmail(ctx, logger, nk, data) {
+  if (!mailConf(nk)) return data;
+  var email = normMail(data && data.email);
+  var r = readOne(nk, 'verif', 'email', ctx.userId);
+  var v = (r && r.value) || {};
+  if (v.verified !== email || nowSec() - int(v.verifiedAt, 0) > 3600) throw new Error('Confirme d’abord ton adresse e-mail avec le code reçu');
+  return data;
+}
+
+function rpcAdminMail(ctx, logger, nk, payload) {
+  requireAdmin(ctx);
+  var p = parse(payload);
+  if (p.clear === true) {
+    nk.storageDelete([{ collection: 'config', key: 'mail', userId: SYSTEM_ID }]);
+    return JSON.stringify({ configured: false });
+  }
+  if (p.key !== undefined || p.sender !== undefined) {
+    var old = mailConf(nk) || {};
+    var key = p.key ? String(p.key).trim() : old.key;
+    var sender = p.sender ? normMail(p.sender) : old.sender;
+    if (!key || key.length < 10 || key.length > 300) throw new Error('Clé du service invalide');
+    if (!sender) throw new Error('Adresse d’envoi manquante');
+    writeOne(nk, 'config', 'mail', SYSTEM_ID, { key: key, sender: sender, senderName: String(p.senderName || old.senderName || 'OutDO!').slice(0, 40), at: nowSec() }, null, false);
+    if (p.test === true && key !== 'TEST-NO-SEND') {
+      sendMail(nk, logger, mailConf(nk), sender, 'OutDO! : test d’envoi réussi', '<p>Les e-mails de confirmation d’OutDO! fonctionnent.</p>');
+    }
+  }
+  var c = mailConf(nk);
+  // la clé n'est JAMAIS renvoyée : seulement ses 4 derniers caractères, pour la reconnaître
+  return JSON.stringify({ configured: !!c, sender: c ? c.sender : '', keyEnd: c ? String(c.key).slice(-4) : '' });
+}
+
+// ---------------------------------------------------------------------------------------------
 // mode Admin du jeu (tableau de bord : placement des avatars, versions, préproduction, rôles,
 // joueurs de test, journal) — mêmes documents et MÊMES RÈGLES que dans l'artefact claude.ai :
 //   tout le monde lit, les administrateurs écrivent ; roles : écrit par le propriétaire seulement ;
@@ -767,6 +893,11 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc('me', rpcMe);
   initializer.registerRpc('friend_invite', rpcFriendInvite);
   initializer.registerRpc('ad_identity', rpcAdIdentity);
+  initializer.registerRpc('email_start', rpcEmailStart);
+  initializer.registerRpc('email_confirm', rpcEmailConfirm);
+  initializer.registerRpc('email_status', rpcEmailStatus);
+  initializer.registerRpc('admin_mail', rpcAdminMail);
+  initializer.registerBeforeLinkEmail(beforeLinkEmail);
   initializer.registerRpc('ad_get', rpcAdGet);
   initializer.registerRpc('ad_list', rpcAdList);
   initializer.registerRpc('ad_set', rpcAdSet);
